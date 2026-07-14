@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainWhite.unity
     guid: 54b7e2fb92258ce449309d429561693d
+  - enabled: 1
+    path: Assets/Scenes/FrogRoom.unity
+    guid: 96797071c1c57ef47a1a59a66fb4a639
   m_configObjects: {}

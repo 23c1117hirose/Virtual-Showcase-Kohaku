@@ -5,5 +5,6 @@
         MainRoom,
         MainLines,
         MainWhite,
+        FrogRoom  // 追加
     }
 }

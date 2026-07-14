@@ -313,6 +313,18 @@ namespace VirtualShowcase.Utilities
             set => PlayerPrefs.SetFloat("focalLength", value);
         }
 
+        public static float ReferenceFaceExtent
+        {
+            get => PlayerPrefs.GetFloat("referenceFaceExtent", -1);
+            set => PlayerPrefs.SetFloat("referenceFaceExtent", value);
+        }
+
+        public static float ReferenceDistanceCm
+        {
+            get => PlayerPrefs.GetFloat("referenceDistanceCm", 50f);
+            set => PlayerPrefs.SetFloat("referenceDistanceCm", value);
+        }
+
         public static GraphicsQuality Quality
         {
             get => (GraphicsQuality)PlayerPrefs.GetInt("qualityIndex", (int)GraphicsQuality.High);

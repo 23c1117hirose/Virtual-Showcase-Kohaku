@@ -15,6 +15,7 @@ namespace VirtualShowcase.Core
         public const string ROOM_SCENE_NAME = "MainRoom";
         public const string LINES_SCENE_NAME = "MainLines";
         public const string WHITE_SCENE_NAME = "MainWhite";
+        public const string FROG_SCENE_NAME = "FrogRoom";  // 追加
 
         public bool IsInMenu => SceneManager.GetActiveScene().name == MENU_SCENE_NAME;
         public bool IsInMainScene => !IsInMenu;
@@ -82,6 +83,7 @@ namespace VirtualShowcase.Core
                 MainScenes.MainRoom => ROOM_SCENE_NAME,
                 MainScenes.MainLines => LINES_SCENE_NAME,
                 MainScenes.MainWhite => WHITE_SCENE_NAME,
+                MainScenes.FrogRoom => FROG_SCENE_NAME,  // 追加
                 _ => throw new ArgumentOutOfRangeException(nameof(scene), scene, null)
             };
         }

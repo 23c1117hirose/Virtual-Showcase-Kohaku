@@ -22,6 +22,9 @@ namespace VirtualShowcase.FaceTracking.Transform
         [SerializeField]
         private GameObject virtualWindow;
 
+        [SerializeField]
+        private DepthBasedFovController fovMultiplier;
+
         #endregion
 
         public static float ScreenWidth =>
@@ -124,6 +127,17 @@ namespace VirtualShowcase.FaceTracking.Transform
             float width = ScreenWidth;
             float height = ScreenHeight;
 
+            // ↓↓↓ ここから追加 ↓↓↓
+            // 距離に応じた歪み(パースの誇張/圧縮)の補正。
+            // 1.0が基準(元の見え方)、近づくほど値が大きくなり、歪みが強くなる。
+            if (fovMultiplier != null)
+            {
+                float multiplier = fovMultiplier.CurrentMultiplier;
+                width *= multiplier;
+                height *= multiplier;
+            }
+            // ↑↑↑ ここまで追加 ↑↑↑
+
             // Screen position relative to the head (camera).
             Vector3 screenPos = cam.transform.InverseTransformPoint(virtualWindow.transform.position);
 
@@ -143,7 +157,12 @@ namespace VirtualShowcase.FaceTracking.Transform
             float topY = screenTopY * ratio;
 
             // Load the perpendicular projection.
-            cam.projectionMatrix = Matrix4x4.Frustum(leftX, rightX, bottomY, topY, cam.nearClipPlane, cam.farClipPlane);
+            // 変更前:
+            // cam.projectionMatrix = Matrix4x4.Frustum(leftX, rightX, bottomY, topY, cam.nearClipPlane, cam.farClipPlane);
+
+            // 変更後:
+            Matrix4x4 flip = Matrix4x4.Scale(new Vector3(1, -1, 1));
+            cam.projectionMatrix = flip * Matrix4x4.Frustum(leftX, rightX, bottomY, topY, cam.nearClipPlane, cam.farClipPlane);
         }
 
         private void DrawScreen()

@@ -170,6 +170,21 @@ namespace VirtualShowcase.Showcase
                 // Set focal length and hide UI.
                 case CalibrationState.Reset:
                     MyPrefs.CalibratedFocalLength = detector.LastDetection.GetFocalLength(distanceSlider.value);
+                    
+                    // 正面向きも一緒にキャリブレーションする
+                    var yawEstimator = FindObjectOfType<HeadYawEstimator>();
+                    if (yawEstimator != null)
+                    {
+                        yawEstimator.CalibrateToFront();
+                    }
+
+                    // 顔サイズ基準の距離推定も、同じタイミングでキャリブレーション
+                    var volumeController = FindObjectOfType<FaceDistanceVolumeController>();
+                    if (volumeController != null)
+                    {
+                        volumeController.CalibrateFaceExtent(detector.LastDetection, distanceSlider.value);
+                    }
+
                     TurnOffPreview();
                     _calibrationState = CalibrationState.Off;
                     break;
