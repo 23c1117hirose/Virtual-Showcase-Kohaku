@@ -160,9 +160,21 @@ namespace VirtualShowcase.FaceTracking.Transform
             // 変更前:
             // cam.projectionMatrix = Matrix4x4.Frustum(leftX, rightX, bottomY, topY, cam.nearClipPlane, cam.farClipPlane);
 
+            // 変更前:
+            // Matrix4x4 flip = Matrix4x4.Scale(new Vector3(1, -1, 1));
+            // cam.projectionMatrix = flip * Matrix4x4.Frustum(...);
+
             // 変更後:
-            Matrix4x4 flip = Matrix4x4.Scale(new Vector3(1, -1, 1));
-            cam.projectionMatrix = flip * Matrix4x4.Frustum(leftX, rightX, bottomY, topY, cam.nearClipPlane, cam.farClipPlane);
+            Matrix4x4 frustum = Matrix4x4.Frustum(leftX, rightX, bottomY, topY, cam.nearClipPlane, cam.farClipPlane);
+            if (FlipManager.IsFlipEnabled)
+            {
+                Matrix4x4 flip = Matrix4x4.Scale(new Vector3(1, -1, 1));
+                cam.projectionMatrix = flip * frustum;
+            }
+            else
+            {
+                cam.projectionMatrix = frustum;
+            }
         }
 
         private void DrawScreen()

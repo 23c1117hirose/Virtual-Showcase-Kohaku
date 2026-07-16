@@ -34,6 +34,13 @@ namespace VirtualShowcase.FaceTracking.Transform
 
         public void Transform(FaceDetection detection)
         {
+            // 未キャリブレーションのガード
+            if (Mathf.Approximately(MyPrefs.LeftCalibration, MyPrefs.RightCalibration) ||
+                Mathf.Approximately(MyPrefs.BottomCalibration, MyPrefs.TopCalibration))
+            {
+                return; // キャリブレーションされるまで何もしない
+            }
+            
             // Map coords based on the calibration.
             // Middle of the screen is 0.0f, left is -0.5f, right is 0.5f.
             float centerX = detection.EyesCenter.x.Map(MyPrefs.LeftCalibration, MyPrefs.RightCalibration, 0.0f, 1.0f);

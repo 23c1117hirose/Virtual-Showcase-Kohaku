@@ -17,7 +17,7 @@ public class FlipCullingCorrector : MonoBehaviour
 
     private void OnBeginCameraRendering(ScriptableRenderContext context, Camera cam)
     {
-        GL.invertCulling = true;
+        GL.invertCulling = FlipManager.IsFlipEnabled;
     }
 
     private void OnEndCameraRendering(ScriptableRenderContext context, Camera cam)

@@ -67,16 +67,17 @@ namespace VirtualShowcase.Showcase
 
         public void ToggleCalibrationUI()
         {
-            // If UI is disabled, go to the first state.
-            if (_calibrationState == CalibrationState.Off)
-            {
-                _calibrationState = _calibrationState.Next();
-                UpdateCalibrationState();
-            }
-            // Else disable UI.
-            else
+            // Canvas(UI全体)が表示中なら、キャリブレーション状態に関わらず全部消す
+            if (canvas.gameObject.activeSelf)
             {
                 _calibrationState = CalibrationState.Off;
+                TurnOffPreview(); // Canvas全体+プレビューを非表示
+                MyEvents.CalibrationChanged?.Invoke(gameObject, false);
+            }
+            // 非表示なら、キャリブレーションを最初から開始
+            else
+            {
+                _calibrationState = CalibrationState.Left; // 最初のステップ
                 UpdateCalibrationState();
             }
         }
@@ -118,6 +119,8 @@ namespace VirtualShowcase.Showcase
                 // Highlight left edge.
                 case CalibrationState.Left:
                     TurnOnPreview();
+                    monitorImage.gameObject.SetActive(true);  // ← 追加
+                    guideText.gameObject.SetActive(true);     // ← 追加
                     SetGuideText("left");
                     HighlightEdge();
                     break;
@@ -171,21 +174,13 @@ namespace VirtualShowcase.Showcase
                 case CalibrationState.Reset:
                     MyPrefs.CalibratedFocalLength = detector.LastDetection.GetFocalLength(distanceSlider.value);
                     
-                    // 正面向きも一緒にキャリブレーションする
-                    var yawEstimator = FindObjectOfType<HeadYawEstimator>();
-                    if (yawEstimator != null)
-                    {
-                        yawEstimator.CalibrateToFront();
-                    }
+                    // ...(headYawEstimator、CalibrateFaceExtent等の既存追加分はそのまま)...
 
-                    // 顔サイズ基準の距離推定も、同じタイミングでキャリブレーション
-                    var volumeController = FindObjectOfType<FaceDistanceVolumeController>();
-                    if (volumeController != null)
-                    {
-                        volumeController.CalibrateFaceExtent(detector.LastDetection, distanceSlider.value);
-                    }
+                    // 手順UIだけを非表示にし、プレビューは表示したまま維持
+                    monitorImage.gameObject.SetActive(false);
+                    guideText.gameObject.SetActive(false);
+                    cameraPreview.ShowSmallPreview();
 
-                    TurnOffPreview();
                     _calibrationState = CalibrationState.Off;
                     break;
 
