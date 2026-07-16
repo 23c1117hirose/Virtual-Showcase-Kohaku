@@ -6,11 +6,12 @@
 [Bb]uilds/
 [Uu]ser[Ss]ettings/
 Assets/AssetStoreTools*
-Models
 
 Assets/Plugins/*
 !Assets/Plugins/UnityMeshSimplifier
 !Assets/Plugins/UnityMeshSimplifier.meta
+!Assets/Plugins/SteamAudio
+!Assets/Plugins/SteamAudio.meta
 
 Assets/Objects/*
 !Assets/Objects/PcMonitor.fbx.meta
