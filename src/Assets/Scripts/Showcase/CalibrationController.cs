@@ -41,6 +41,9 @@ namespace VirtualShowcase.Showcase
         [SerializeField]
         private Detector detector;
 
+        [SerializeField]
+private GameObject calibrationUIRoot; // Calibrationオブジェクト(手順UI全体の親)
+
         #endregion
 
         private CalibrationState _calibrationState = CalibrationState.Off;
@@ -119,8 +122,7 @@ namespace VirtualShowcase.Showcase
                 // Highlight left edge.
                 case CalibrationState.Left:
                     TurnOnPreview();
-                    monitorImage.gameObject.SetActive(true);  // ← 追加
-                    guideText.gameObject.SetActive(true);     // ← 追加
+                    calibrationUIRoot.SetActive(true); // ← 手順UI全体を再表示(個別のSetActiveは削除)
                     SetGuideText("left");
                     HighlightEdge();
                     break;
@@ -174,12 +176,11 @@ namespace VirtualShowcase.Showcase
                 case CalibrationState.Reset:
                     MyPrefs.CalibratedFocalLength = detector.LastDetection.GetFocalLength(distanceSlider.value);
                     
-                    // ...(headYawEstimator、CalibrateFaceExtent等の既存追加分はそのまま)...
+                    // ...(既存の追加分はそのまま)...
 
-                    // 手順UIだけを非表示にし、プレビューは表示したまま維持
-                    monitorImage.gameObject.SetActive(false);
-                    guideText.gameObject.SetActive(false);
-                    cameraPreview.ShowSmallPreview();
+                    // 変更: 手順UIもプレビューも全部消す(TurnOffPreviewに戻す)
+                    calibrationUIRoot.SetActive(true); // 次回表示に備えて内部状態は戻しておく
+                    TurnOffPreview();
 
                     _calibrationState = CalibrationState.Off;
                     break;
@@ -204,9 +205,7 @@ namespace VirtualShowcase.Showcase
         private void TurnOnPreview()
         {
             canvas.gameObject.SetActive(true);
-
-            // Enable camera preview.
-            cameraPreview.ShowSmallPreview();
+            cameraPreview.Enable(); // ShowSmallPreview() から変更
         }
 
         private void TurnOffPreview()

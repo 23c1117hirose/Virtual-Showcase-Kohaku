@@ -120,9 +120,9 @@ namespace VirtualShowcase.Core
             };
             _inputActions.MainGeneral.Calibrationtoggle.performed += _ =>
             {
-                canvas.gameObject.SetActive(!canvas.gameObject.activeSelf);
+                canvas.gameObject.SetActive(!canvas.gameObject.activeSelf);      // ← 先にcanvasをトグル
                 calibrationController.gameObject.SetActive(!calibrationController.gameObject.activeSelf);
-                calibrationController.ToggleCalibrationUI();
+                calibrationController.ToggleCalibrationUI();                     // ← その後に呼ばれる
             };
             _inputActions.MainGeneral.Menutoggle.performed += _ => MySceneManager.Instance.ToggleMenu();
             _inputActions.MainGeneral.Pickscene.performed += _ => scenesCanvas.gameObject.SetActive(!scenesCanvas.gameObject.activeSelf);
