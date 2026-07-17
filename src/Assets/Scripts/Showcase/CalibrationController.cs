@@ -42,7 +42,10 @@ namespace VirtualShowcase.Showcase
         private Detector detector;
 
         [SerializeField]
-private GameObject calibrationUIRoot; // Calibrationオブジェクト(手順UI全体の親)
+        private GameObject calibrationUIRoot; // Calibrationオブジェクト(手順UI全体の親)
+
+        [SerializeField]
+        private GameObject recalibrateButton; // RecalibrateButtonをドラッグ
 
         #endregion
 
@@ -70,18 +73,38 @@ private GameObject calibrationUIRoot; // Calibrationオブジェクト(手順UI�
 
         public void ToggleCalibrationUI()
         {
-            // Canvas(UI全体)が表示中なら、キャリブレーション状態に関わらず全部消す
+            Debug.Log($"[Calib] ToggleCalibrationUI呼び出し: canvas.activeSelf = {canvas.gameObject.activeSelf}");
+
             if (canvas.gameObject.activeSelf)
             {
+                Debug.Log("[Calib] → 閉じる処理を実行");
                 _calibrationState = CalibrationState.Off;
-                TurnOffPreview(); // Canvas全体+プレビューを非表示
+                TurnOffPreview();
+                Debug.Log($"[Calib] TurnOffPreview後: canvas.activeSelf = {canvas.gameObject.activeSelf}");
                 MyEvents.CalibrationChanged?.Invoke(gameObject, false);
             }
-            // 非表示なら、キャリブレーションを最初から開始
             else
             {
-                _calibrationState = CalibrationState.Left; // 最初のステップ
-                UpdateCalibrationState();
+                Debug.Log("[Calib] → 開く処理を実行");
+                TurnOnPreview();
+
+                if (MyPrefs.CalibratedFocalLength > 0)
+                {
+                    Debug.Log("[Calib] キャリブレーション済み: 再キャリブレーションボタン表示");
+                    calibrationUIRoot.SetActive(false);
+                    recalibrateButton.SetActive(true);
+                }
+                else
+                {
+                    Debug.Log("[Calib] 未キャリブレーション: 手順開始");
+                    calibrationUIRoot.SetActive(true);
+                    recalibrateButton.SetActive(false);
+                    _calibrationState = CalibrationState.Left;
+                    UpdateCalibrationState();
+                    return;
+                }
+
+                MyEvents.CalibrationChanged?.Invoke(gameObject, true);
             }
         }
 
@@ -122,7 +145,8 @@ private GameObject calibrationUIRoot; // Calibrationオブジェクト(手順UI�
                 // Highlight left edge.
                 case CalibrationState.Left:
                     TurnOnPreview();
-                    calibrationUIRoot.SetActive(true); // ← 手順UI全体を再表示(個別のSetActiveは削除)
+                    calibrationUIRoot.SetActive(true);
+                    recalibrateButton.SetActive(false); // ← 追加(念のための保険)
                     SetGuideText("left");
                     HighlightEdge();
                     break;
@@ -178,9 +202,8 @@ private GameObject calibrationUIRoot; // Calibrationオブジェクト(手順UI�
                     
                     // ...(既存の追加分はそのまま)...
 
-                    // 変更: 手順UIもプレビューも全部消す(TurnOffPreviewに戻す)
-                    calibrationUIRoot.SetActive(true); // 次回表示に備えて内部状態は戻しておく
-                    TurnOffPreview();
+                    TurnOffPreview(); // プレビューも手順UIも全部消す
+                    calibrationUIRoot.SetActive(true); // 内部状態リセット(次回のため)
 
                     _calibrationState = CalibrationState.Off;
                     break;
@@ -219,6 +242,14 @@ private GameObject calibrationUIRoot; // Calibrationオブジェクト(手順UI�
         private void HighlightEdge()
         {
             monitorImage.sprite = monitorSprites[(int)_calibrationState.Prev()];
+        }
+
+        public void StartRecalibration()
+        {
+            recalibrateButton.SetActive(false);
+            calibrationUIRoot.SetActive(true);
+            _calibrationState = CalibrationState.Left;
+            UpdateCalibrationState();
         }
     }
 }

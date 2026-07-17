@@ -87,6 +87,7 @@ namespace VirtualShowcase.Core
                 _inputActions.MainGeneral.Previewtoggle.SetEnabled(!isEnabled);
                 _inputActions.MainGeneral.Nextscene.SetEnabled(!isEnabled);
                 _inputActions.MainGeneral.Previousscene.SetEnabled(!isEnabled);
+                // Calibrationtoggle.SetEnabled の行が無いこと(定規アイコンは常に使えるようにする)
             });
 
             // Subscribe to input actions.
@@ -120,9 +121,7 @@ namespace VirtualShowcase.Core
             };
             _inputActions.MainGeneral.Calibrationtoggle.performed += _ =>
             {
-                canvas.gameObject.SetActive(!canvas.gameObject.activeSelf);      // ← 先にcanvasをトグル
-                calibrationController.gameObject.SetActive(!calibrationController.gameObject.activeSelf);
-                calibrationController.ToggleCalibrationUI();                     // ← その後に呼ばれる
+                calibrationController.ToggleCalibrationUI();
             };
             _inputActions.MainGeneral.Menutoggle.performed += _ => MySceneManager.Instance.ToggleMenu();
             _inputActions.MainGeneral.Pickscene.performed += _ => scenesCanvas.gameObject.SetActive(!scenesCanvas.gameObject.activeSelf);

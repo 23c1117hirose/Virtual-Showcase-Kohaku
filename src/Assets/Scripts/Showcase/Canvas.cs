@@ -41,8 +41,6 @@ namespace VirtualShowcase.Showcase
 
         public void ToggleCalibrationCanvas()
         {
-            _calibrationCanvas.SetActive(!_calibrationCanvas.activeSelf);
-            calibrationController.gameObject.SetActive(!calibrationController.gameObject.activeSelf);
             calibrationController.ToggleCalibrationUI();
         }
 
