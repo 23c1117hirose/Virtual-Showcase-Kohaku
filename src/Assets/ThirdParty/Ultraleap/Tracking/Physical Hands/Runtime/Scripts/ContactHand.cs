@@ -15,8 +15,8 @@ namespace Leap.Unity.PhysicalHands
     {
         internal const int FINGERS = 5, FINGER_BONES = 3;
 
-        public ContactBone[] bones { get; internal set; }
-        public ContactBone palmBone { get; internal set; }
+        internal ContactBone[] bones;
+        internal ContactBone palmBone;
 
         /// <summary>
         /// Is the hand tracked from a visual sense?
@@ -48,10 +48,11 @@ namespace Leap.Unity.PhysicalHands
         internal PhysicalHandsManager physicalHandsManager => contactParent.physicalHandsManager;
 
         #region Interaction Data
-        internal bool isHovering = false, isCloseToObject = false, isContacting = false, isGrabbing = false;
+        internal bool isContacting = false, isHovering = false, isCloseToObject = false, isGrabbing = false;
         public bool IsHovering => isHovering;
         public bool IsContacting => isContacting;
         public bool IsCloseToObject => isCloseToObject;
+
         public bool IsGrabbing => isGrabbing;
 
         protected Vector3 _oldDataPosition, _oldContactPosition;
@@ -213,7 +214,7 @@ namespace Leap.Unity.PhysicalHands
 
                     boneArrayIndex = fingerIndex * FINGER_BONES + jointIndex;
 
-                    bones[boneArrayIndex] = new GameObject($"{HandUtils.FingerIndexToName(fingerIndex)} {HandUtils.JointIndexToName(jointIndex + 1)}", boneType).GetComponent<ContactBone>();
+                    bones[boneArrayIndex] = new GameObject($"{HandUtils.FingerIndexToName(fingerIndex)} {HandUtils.JointIndexToName(jointIndex + 1)}", boneType, typeof(CapsuleCollider)).GetComponent<ContactBone>();
                     bone = bones[boneArrayIndex];
                     bone.gameObject.layer = contactParent.physicalHandsManager.HandsResetLayer;
                     bone.transform.SetParent(lastTransform);
@@ -221,7 +222,7 @@ namespace Leap.Unity.PhysicalHands
                     bone.finger = fingerIndex;
                     bone.joint = jointIndex;
 
-                    bone.boneCollider = bone.gameObject.AddComponent<CapsuleCollider>();
+                    bone.boneCollider = bone.GetComponent<CapsuleCollider>();
                     ContactUtils.SetupBoneCollider(bone.boneCollider, leapHand.Fingers[fingerIndex].Bone((Bone.BoneType)(jointIndex + 1)));
                     bone.contactHand = this;
 

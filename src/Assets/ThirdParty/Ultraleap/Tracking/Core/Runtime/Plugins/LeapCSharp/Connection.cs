@@ -72,8 +72,12 @@ namespace LeapInternal
 
         private IntPtr _leapConnection;
         private volatile bool _isRunning = false;
-        public bool IsRunning { get { return _isRunning; } }
         private Thread _polster;
+
+        /// <summary>
+        /// Has the connection been set up in multi device aware mode
+        /// </summary>
+        private bool _multiDeviceAwareConnection = false;
 
         /// <summary>
         /// Minimum service version that support setting the tracking mode on a per dervice basis
@@ -84,7 +88,6 @@ namespace LeapInternal
         private Dictionary<uint, UInt64> _activePolicies = new Dictionary<uint, ulong>();
 
         //Config change status
-        [Obsolete("Config is not used in Ultraleap's Tracking Service 5.X+. This will be removed in the next Major release")]
         private Dictionary<uint, string> _configRequests = new Dictionary<uint, string>();
 
         //Connection events
@@ -121,16 +124,13 @@ namespace LeapInternal
         public EventHandler<FrameEventArgs> LeapFrame;
         public EventHandler<InternalFrameEventArgs> LeapInternalFrame;
         public EventHandler<LogEventArgs> LeapLogEvent;
-        [Obsolete("Config is not used in Ultraleap's Tracking Service 5.X+. This will be removed in the next Major release")]
         public EventHandler<SetConfigResponseEventArgs> LeapConfigResponse;
-        [Obsolete("Config is not used in Ultraleap's Tracking Service 5.X+. This will be removed in the next Major release")]
         public EventHandler<ConfigChangeEventArgs> LeapConfigChange;
         public EventHandler<DistortionEventArgs> LeapDistortionChange;
         public EventHandler<DroppedFrameEventArgs> LeapDroppedFrame;
         public EventHandler<ImageEventArgs> LeapImage;
         public EventHandler<PointMappingChangeEventArgs> LeapPointMappingChange;
         public EventHandler<HeadPoseEventArgs> LeapHeadPoseChange;
-        public EventHandler<FiducialPoseEventArgs> LeapFiducialPose;
 
         public Action<BeginProfilingForThreadArgs> LeapBeginProfilingForThread;
         public Action<EndProfilingForThreadArgs> LeapEndProfilingForThread;
@@ -150,6 +150,10 @@ namespace LeapInternal
         {
             if (_disposed)
                 return;
+
+            if (disposing)
+            {
+            }
 
             Stop();
             LeapC.DestroyConnection(_leapConnection);
@@ -177,8 +181,9 @@ namespace LeapInternal
         {
             LEAP_CONNECTION_CONFIG config = new LEAP_CONNECTION_CONFIG();
             config.server_namespace = Marshal.StringToHGlobalAnsi(serverNamespace);
-            config.flags = (uint)eLeapConnectionFlag.eLeapConnectionFlag_MultipleDevicesAware;
+            config.flags = multiDeviceAware ? (uint)eLeapConnectionFlag.eLeapConnectionFlag_MultipleDevicesAware : 0;
             config.size = (uint)Marshal.SizeOf(config);
+            _multiDeviceAwareConnection = multiDeviceAware;
             Start(config);
         }
 
@@ -205,18 +210,7 @@ namespace LeapInternal
                     return;
                 }
             }
-
-            // Produce metadata to send before connection is opened
-            string metadata = MetadataUtil.GetMetaData();
-            UIntPtr uIntPtr = new UIntPtr((uint)metadata.Length);
-
-            if (metadata != null && metadata != "")
-            {
-                LeapC.SetConnectionMetadata(_leapConnection, metadata, uIntPtr);
-            }
-
             result = LeapC.OpenConnection(_leapConnection);
-
             if (result != eLeapRS.eLeapRS_Success)
             {
                 reportAbnormalResults("LeapC OpenConnection call was ", result);
@@ -314,6 +308,7 @@ namespace LeapInternal
                     {
                         case eLeapEventType.eLeapEventType_None:
                             break;
+
                         case eLeapEventType.eLeapEventType_Connection:
                             LEAP_CONNECTION_EVENT connection_evt;
                             StructMarshal<LEAP_CONNECTION_EVENT>.PtrToStruct(_msg.eventStructPtr, out connection_evt);
@@ -324,11 +319,13 @@ namespace LeapInternal
                             StructMarshal<LEAP_CONNECTION_LOST_EVENT>.PtrToStruct(_msg.eventStructPtr, out connection_lost_evt);
                             handleConnectionLost(ref connection_lost_evt);
                             break;
+
                         case eLeapEventType.eLeapEventType_Device:
                             LEAP_DEVICE_EVENT device_evt;
                             StructMarshal<LEAP_DEVICE_EVENT>.PtrToStruct(_msg.eventStructPtr, out device_evt);
                             handleDevice(ref device_evt);
                             break;
+
                         // Note that unplugging a device generates an eLeapEventType_DeviceLost event
                         // message, not a failure message. DeviceLost is further down.
                         case eLeapEventType.eLeapEventType_DeviceFailure:
@@ -336,6 +333,7 @@ namespace LeapInternal
                             StructMarshal<LEAP_DEVICE_FAILURE_EVENT>.PtrToStruct(_msg.eventStructPtr, out device_failure_evt);
                             handleFailedDevice(ref device_failure_evt);
                             break;
+
                         case eLeapEventType.eLeapEventType_Policy:
                             LEAP_POLICY_EVENT policy_evt;
                             StructMarshal<LEAP_POLICY_EVENT>.PtrToStruct(_msg.eventStructPtr, out policy_evt);
@@ -356,6 +354,11 @@ namespace LeapInternal
                             StructMarshal<LEAP_DEVICE_EVENT>.PtrToStruct(_msg.eventStructPtr, out device_lost_evt);
                             handleLostDevice(ref device_lost_evt);
                             break;
+                        case eLeapEventType.eLeapEventType_ConfigChange:
+                            LEAP_CONFIG_CHANGE_EVENT config_change_evt;
+                            StructMarshal<LEAP_CONFIG_CHANGE_EVENT>.PtrToStruct(_msg.eventStructPtr, out config_change_evt);
+                            handleConfigChange(ref config_change_evt);
+                            break;
                         case eLeapEventType.eLeapEventType_DroppedFrame:
                             LEAP_DROPPED_FRAME_EVENT dropped_frame_evt;
                             StructMarshal<LEAP_DROPPED_FRAME_EVENT>.PtrToStruct(_msg.eventStructPtr, out dropped_frame_evt);
@@ -371,20 +374,15 @@ namespace LeapInternal
                             StructMarshal<LEAP_POINT_MAPPING_CHANGE_EVENT>.PtrToStruct(_msg.eventStructPtr, out point_mapping_change_evt);
                             handlePointMappingChange(ref point_mapping_change_evt);
                             break;
+                        case eLeapEventType.eLeapEventType_HeadPose:
+                            LEAP_HEAD_POSE_EVENT head_pose_event;
+                            StructMarshal<LEAP_HEAD_POSE_EVENT>.PtrToStruct(_msg.eventStructPtr, out head_pose_event);
+                            handleHeadPoseChange(ref head_pose_event);
+                            break;
                         case eLeapEventType.eLeapEventType_DeviceStatusChange:
                             LEAP_DEVICE_STATUS_CHANGE_EVENT status_evt;
                             StructMarshal<LEAP_DEVICE_STATUS_CHANGE_EVENT>.PtrToStruct(_msg.eventStructPtr, out status_evt);
                             handleDeviceStatusEvent(ref status_evt);
-                            break;
-                        case eLeapEventType.eLeapEventType_NewDeviceTransform:
-                            LEAP_NEW_DEVICE_TRANSFORM new_transform_evt;
-                            StructMarshal<LEAP_NEW_DEVICE_TRANSFORM>.PtrToStruct(_msg.eventStructPtr, out new_transform_evt);
-                            handleNewDeviceTransform(ref new_transform_evt, _msg.deviceID);
-                            break;
-                        case eLeapEventType.eLeapEventType_Fiducial:
-                            LEAP_FIDUCIAL_POSE_EVENT fiducial_event;
-                            StructMarshal<LEAP_FIDUCIAL_POSE_EVENT>.PtrToStruct(_msg.eventStructPtr, out fiducial_event);
-                            handleFiducialPoseEvent(ref fiducial_event);
                             break;
                     } //switch on _msg.type
 
@@ -584,6 +582,7 @@ namespace LeapInternal
             }
 
             Marshal.FreeHGlobal(trackingBuffer);
+
         }
 
         public void GetInterpolatedLeftRightTransform(Int64 time,
@@ -621,15 +620,6 @@ namespace LeapInternal
             }
 
             device.UpdateStatus(statusEvent.status);
-        }
-
-        private void handleFiducialPoseEvent(ref LEAP_FIDUCIAL_POSE_EVENT fiducialPoseEvent)
-        {
-            if (LeapFiducialPose != null)
-            {
-                LeapFiducialPose.DispatchOnContext(this, EventContext,
-                    new FiducialPoseEventArgs(fiducialPoseEvent));
-            }
         }
 
         private void handleDevice(ref LEAP_DEVICE_EVENT deviceMsg)
@@ -740,6 +730,19 @@ namespace LeapInternal
             {
                 LeapDeviceFailure.DispatchOnContext(this, EventContext,
                   new DeviceFailureEventArgs((uint)deviceMsg.status, failureMessage, failedSerialNumber));
+            }
+        }
+
+        private void handleConfigChange(ref LEAP_CONFIG_CHANGE_EVENT configEvent)
+        {
+            string config_key = "";
+            _configRequests.TryGetValue(configEvent.requestId, out config_key);
+            if (config_key != null)
+                _configRequests.Remove(configEvent.requestId);
+            if (LeapConfigChange != null)
+            {
+                LeapConfigChange.DispatchOnContext(this, EventContext,
+                  new ConfigChangeEventArgs(config_key, configEvent.status != false, configEvent.requestId));
             }
         }
 
@@ -863,30 +866,29 @@ namespace LeapInternal
             _activePolicies[deviceID] = policyMsg.current_policy;
         }
 
-        private void handleNewDeviceTransform(ref LEAP_NEW_DEVICE_TRANSFORM deviceTransformMsg, UInt32 deviceID)
-        {
-            Device device = _devices.FindDeviceByID(deviceID);
-
-            if (device != null)
-            {
-                device.FindDeviceTransform();
-            }
-        }
-
-
         public void SetAndClearPolicy(Controller.PolicyFlag set, Controller.PolicyFlag clear, Device device = null)
         {
             UInt64 setFlags = (ulong)FlagForPolicy(set);
             UInt64 clearFlags = (ulong)FlagForPolicy(clear);
             eLeapRS result;
 
-            if (device != null && Controller.CheckRequiredServiceVersion(MinServiceVersionForMultiModeSupport, this))
+            if (device == null || !_multiDeviceAwareConnection)
             {
-                result = LeapC.SetPolicyFlagsEx(_leapConnection, device.Handle, setFlags, clearFlags);
+                result = LeapC.SetPolicyFlags(_leapConnection, setFlags, clearFlags);
             }
             else
             {
-                result = LeapC.SetPolicyFlags(_leapConnection, setFlags, clearFlags);
+                if (!Controller.CheckRequiredServiceVersion(MinServiceVersionForMultiModeSupport, this))
+                {
+                    UnityEngine.Debug.LogWarning(String.Format("Your current tracking service does not support setting policy flags on a per device basis (min version is {0}.{1}.{2}). Please update your service: https://developer.leapmotion.com/tracking-software-download",
+                        MinServiceVersionForMultiModeSupport.major,
+                        MinServiceVersionForMultiModeSupport.minor,
+                        MinServiceVersionForMultiModeSupport.patch));
+
+                    return;
+                }
+
+                result = LeapC.SetPolicyFlagsEx(_leapConnection, device.Handle, setFlags, clearFlags);
             }
 
             reportAbnormalResults("LeapC SetAndClearPolicy call was ", result);
@@ -898,13 +900,23 @@ namespace LeapInternal
 
             eLeapRS result;
 
-            if (device != null && Controller.CheckRequiredServiceVersion(MinServiceVersionForMultiModeSupport, this))
+            if (device == null || !_multiDeviceAwareConnection)
             {
-                result = LeapC.SetPolicyFlagsEx(_leapConnection, device.Handle, setFlags, 0);
+                result = LeapC.SetPolicyFlags(_leapConnection, setFlags, 0);
             }
             else
             {
-                result = LeapC.SetPolicyFlags(_leapConnection, setFlags, 0);
+                if (!Controller.CheckRequiredServiceVersion(MinServiceVersionForMultiModeSupport, this))
+                {
+                    UnityEngine.Debug.LogWarning(String.Format("Your current tracking service does not support setting policy flags on a per device basis (min version is {0}.{1}.{2}). Please update your service: https://developer.leapmotion.com/tracking-software-download",
+                        MinServiceVersionForMultiModeSupport.major,
+                        MinServiceVersionForMultiModeSupport.minor,
+                        MinServiceVersionForMultiModeSupport.patch));
+
+                    return;
+                }
+
+                result = LeapC.SetPolicyFlagsEx(_leapConnection, device.Handle, setFlags, 0);
             }
 
             reportAbnormalResults("LeapC SetPolicyFlags call was ", result);
@@ -916,13 +928,23 @@ namespace LeapInternal
 
             eLeapRS result;
 
-            if (device != null && Controller.CheckRequiredServiceVersion(MinServiceVersionForMultiModeSupport, this))
+            if (device == null || !_multiDeviceAwareConnection)
             {
-                result = LeapC.SetPolicyFlagsEx(_leapConnection, device.Handle, 0, clearFlags);
+                result = LeapC.SetPolicyFlags(_leapConnection, 0, clearFlags);
             }
             else
             {
-                result = LeapC.SetPolicyFlags(_leapConnection, 0, clearFlags);
+                if (!Controller.CheckRequiredServiceVersion(MinServiceVersionForMultiModeSupport, this))
+                {
+                    UnityEngine.Debug.LogWarning(String.Format("Your current tracking service does not support clearing policy flags on a per device basis (min version is {0}.{1}.{2}). Please update your service: https://developer.leapmotion.com/tracking-software-download",
+                        MinServiceVersionForMultiModeSupport.major,
+                        MinServiceVersionForMultiModeSupport.minor,
+                        MinServiceVersionForMultiModeSupport.patch));
+
+                    return;
+                }
+
+                result = LeapC.SetPolicyFlagsEx(_leapConnection, device.Handle, 0, clearFlags);
             }
 
             reportAbnormalResults("LeapC SetPolicyFlags call was ", result);
@@ -1049,7 +1071,6 @@ namespace LeapInternal
             return _activePolicies.ContainsKey(deviceID);
         }
 
-        [Obsolete("Config is not used in Ultraleap's Tracking Service 5.X+. This will be removed in the next Major release")]
         public uint GetConfigValue(string config_key)
         {
             uint requestId = 0;
@@ -1059,7 +1080,6 @@ namespace LeapInternal
             return requestId;
         }
 
-        [Obsolete("Config is not used in Ultraleap's Tracking Service 5.X+. This will be removed in the next Major release")]
         public uint SetConfigValue<T>(string config_key, T value) where T : IConvertible
         {
             uint requestId = 0;
@@ -1300,19 +1320,6 @@ namespace LeapInternal
                 pm.ids[i] = unchecked((UInt32)ids[i]);
             }
             Marshal.FreeHGlobal(buffer);
-        }
-
-        /// <summary>
-        /// Send a specific set of hints to hDevice, if this does not include previously set ones, they will be cleared.
-        /// </summary>
-        /// <param name="hDevice">The Device pointer for the trcking device to set the hints for</param>
-        /// <param name="hints">The array of hints</param>
-        public void RequestHandTrackingHintsOnDevice(IntPtr hDevice, string[] hints)
-        {
-            eLeapRS result;
-            result = LeapC.SetDeviceHints(_leapConnection, hDevice, hints);
-
-            reportAbnormalResults("LeapC SetDeviceHints call was ", result);
         }
 
         private eLeapRS _lastResult; //Used to avoid repeating the same log message, ie. for events like time out
