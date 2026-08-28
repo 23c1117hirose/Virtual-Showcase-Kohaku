@@ -10,6 +10,8 @@ public class FrogVocalizer : MonoBehaviour
     [HideInInspector]
     public bool isPaused = false; // ← 追加:接触中はtrueにする
 
+    public event System.Action<AudioClip> OnCroak; // ← 追加:鳴いたタイミングを他スクリプトに通知(喉袋の膨らみ用)
+
     void Start()
     {
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
@@ -31,6 +33,7 @@ public class FrogVocalizer : MonoBehaviour
                 audioSource.clip = croakClips[Random.Range(0, croakClips.Length)];
             }
             audioSource.Play();
+            OnCroak?.Invoke(audioSource.clip); // ← 追加
         }
         ScheduleNextCroak(); // タイマー自体は止めず、次回のチェックに委ねる
     }

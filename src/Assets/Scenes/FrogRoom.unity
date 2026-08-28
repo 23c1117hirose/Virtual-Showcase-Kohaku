@@ -228,6 +228,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 64108040}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &102511870
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 102511871}
+  m_Layer: 0
+  m_Name: ThroatBulgeAxis
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &102511871
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 102511870}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.03, z: -2.87}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1794351237}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &116240760 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1488422493901022330, guid: 5cc76807adcae6a4ba6b4522ff1ae677, type: 3}
@@ -901,6 +932,37 @@ MonoBehaviour:
   closeDistanceCm: 30
   farDistanceCm: 100
   smoothing: 0.1
+--- !u!1 &892351861
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 892351862}
+  m_Layer: 0
+  m_Name: BellyPushAxis
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &892351862
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 892351861}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.73, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1794351237}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &917076905
 GameObject:
   m_ObjectHideFlags: 0
@@ -1666,6 +1728,55 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1794351237}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1157217061
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1157217063}
+  - component: {fileID: 1157217062}
+  m_Layer: 0
+  m_Name: FrogBreathing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1157217062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157217061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d902cf71f2f149e4fbbec82118e611f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bellyPush: {fileID: 1811902523}
+  peakFactor: 0.3
+  riseSeconds: 0.15
+  fallSeconds: 0.6
+  restSeconds: 0.15
+--- !u!4 &1157217063
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157217061}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1224585784
 GameObject:
@@ -5042,6 +5153,56 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8e0fbeda1179e774da6992760eebb4f1, type: 3}
+--- !u!1 &1698704403
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1698704405}
+  - component: {fileID: 1698704404}
+  m_Layer: 0
+  m_Name: FrogThroatPuff
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1698704404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1698704403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a68d7ca1b99ac2b45b39ed143b297128, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  throatPush: {fileID: 1811902522}
+  vocalizer: {fileID: 1811902516}
+  peakFactor: 0.3
+  attackSeconds: 0.15
+  holdSeconds: 0.2
+  releaseSeconds: 1
+--- !u!4 &1698704405
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1698704403}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.8699207, y: 0.35456306, z: -2.1538706}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1750071416 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7dfd6ef22fd1d38439bcd438ba284e63, type: 3}
@@ -5214,6 +5375,8 @@ Transform:
   - {fileID: 1811902504}
   - {fileID: 1088892856}
   - {fileID: 218444561}
+  - {fileID: 102511871}
+  - {fileID: 892351862}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1794351238
@@ -5231,7 +5394,6 @@ MonoBehaviour:
   targetCamera: {fileID: 495757939}
   touchPoint: {fileID: 1088892856}
   touchPush: {fileID: 1811902513}
-  restPosition: {x: 0, y: 100, z: 0}
   pushFactor: -1
   smoothSpeed: 8
   audioSource: {fileID: 1811902515}
@@ -5239,7 +5401,6 @@ MonoBehaviour:
   vocalizer: {fileID: 1811902516}
   leapProvider: {fileID: 191006622}
   frogCollider: {fileID: 218444560}
-  leapTouchThreshold: 0.02
 --- !u!114 &1794351239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5367,6 +5528,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8695692657220362004, guid: 7a3f32d73eb423e4aa17bcd17c6f7f71, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1811902517}
+    - targetCorrespondingSourceObject: {fileID: 8695692657220362004, guid: 7a3f32d73eb423e4aa17bcd17c6f7f71, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1811902523}
+    - targetCorrespondingSourceObject: {fileID: 8695692657220362004, guid: 7a3f32d73eb423e4aa17bcd17c6f7f71, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1811902522}
   m_SourcePrefab: {fileID: -4161369568681901532, guid: 7a3f32d73eb423e4aa17bcd17c6f7f71, type: 3}
 --- !u!4 &1811902504 stripped
 Transform:
@@ -5433,6 +5600,10 @@ MonoBehaviour:
     initialized: 1
   deformerElements:
   - component: {fileID: 1811902513}
+    active: 1
+  - component: {fileID: 1811902523}
+    active: 1
+  - component: {fileID: 1811902522}
     active: 1
   customBounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -5730,6 +5901,38 @@ MonoBehaviour:
     m_RotationOrder: 4
   minCosClamp: 0.3
   smoothing: 0.1
+--- !u!114 &1811902522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811902505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a0358b8e6d0ed34da002f33a0cf9bb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  update: 1
+  Axis: {fileID: 102511871}
+  Radius: 4.5
+  Factor: 0
+--- !u!114 &1811902523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811902505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a0358b8e6d0ed34da002f33a0cf9bb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  update: 1
+  Axis: {fileID: 892351862}
+  Radius: 2.8
+  Factor: 0
 --- !u!1 &1820051211
 GameObject:
   m_ObjectHideFlags: 0
@@ -6052,3 +6255,5 @@ SceneRoots:
   - {fileID: 191006621}
   - {fileID: 1686889614}
   - {fileID: 851104180}
+  - {fileID: 1157217063}
+  - {fileID: 1698704405}

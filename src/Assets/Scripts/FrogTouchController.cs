@@ -8,7 +8,6 @@ public class FrogTouchController : MonoBehaviour
     public Camera targetCamera;
     public Transform touchPoint;
     public TouchPushDeformer touchPush;
-    public Vector3 restPosition = new Vector3(0, 100, 0);
 
     public float pushFactor = -0.5f;
     public float smoothSpeed = 8f;
@@ -20,8 +19,7 @@ public class FrogTouchController : MonoBehaviour
 
     [Header("Leap Motion")]
     public LeapProvider leapProvider;      // Service Provider (Desktop) をドラッグ
-    public Collider frogCollider;          // Object_6 のCollider をドラッグ
-    public float leapTouchThreshold = 0.02f; // 接触とみなす距離(m)。実機で調整
+    public Collider frogCollider;          // FrogTouchVolume の Capsule Collider をドラッグ
 
     private bool _wasTouching = false;
 

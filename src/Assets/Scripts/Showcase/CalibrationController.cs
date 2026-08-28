@@ -73,30 +73,23 @@ namespace VirtualShowcase.Showcase
 
         public void ToggleCalibrationUI()
         {
-            Debug.Log($"[Calib] ToggleCalibrationUI呼び出し: canvas.activeSelf = {canvas.gameObject.activeSelf}");
-
             if (canvas.gameObject.activeSelf)
             {
-                Debug.Log("[Calib] → 閉じる処理を実行");
                 _calibrationState = CalibrationState.Off;
                 TurnOffPreview();
-                Debug.Log($"[Calib] TurnOffPreview後: canvas.activeSelf = {canvas.gameObject.activeSelf}");
                 MyEvents.CalibrationChanged?.Invoke(gameObject, false);
             }
             else
             {
-                Debug.Log("[Calib] → 開く処理を実行");
                 TurnOnPreview();
 
                 if (MyPrefs.CalibratedFocalLength > 0)
                 {
-                    Debug.Log("[Calib] キャリブレーション済み: 再キャリブレーションボタン表示");
                     calibrationUIRoot.SetActive(false);
                     recalibrateButton.SetActive(true);
                 }
                 else
                 {
-                    Debug.Log("[Calib] 未キャリブレーション: 手順開始");
                     calibrationUIRoot.SetActive(true);
                     recalibrateButton.SetActive(false);
                     _calibrationState = CalibrationState.Left;
