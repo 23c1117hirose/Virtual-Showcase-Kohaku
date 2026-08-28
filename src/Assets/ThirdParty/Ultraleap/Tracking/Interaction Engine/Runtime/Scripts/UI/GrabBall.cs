@@ -278,11 +278,6 @@ namespace Leap.Unity.Interaction
 
         private void OnDrawGizmos()
         {
-            if (grabBallInteractionBehaviour == null)
-            {
-                return;
-            }
-
             if (_head == null)
             {
                 _head = Camera.main.transform;

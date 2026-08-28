@@ -21,7 +21,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="layerMask">Which layermask should be used</param>
         /// <param name="queryTriggerInteraction">Overrides global Physics.queriesHitTriggers</param>
         /// <returns>Returns the amount of colliders stored into the results buffer.</returns>
-        public static int OverlapBoxNonAlloc(BoxCollider box, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+        internal static int OverlapBoxNonAlloc(BoxCollider box, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
         {
             return OverlapBoxNonAllocOffset(box, Vector3.zero, results, layerMask, queryTriggerInteraction);
         }
@@ -36,7 +36,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="layerMask">Which layermask should be used</param>
         /// <param name="queryTriggerInteraction">Overrides global Physics.queriesHitTriggers</param>
         /// <returns>Returns the amount of colliders stored into the results buffer.</returns>
-        public static int OverlapBoxNonAllocOffset(BoxCollider box, Vector3 offset, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal, float extraRadius = 0)
+        internal static int OverlapBoxNonAllocOffset(BoxCollider box, Vector3 offset, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal, float extraRadius = 0)
         {
             Vector3 center, halfExtents;
             Quaternion orientation;
@@ -51,7 +51,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="center">Where is the centre of the box in world space.</param>
         /// <param name="halfExtents">Half extents of the box in world space.</param>
         /// <param name="orientation">Which way does the box face in world space.</param>
-        public static void ToWorldSpaceBox(this BoxCollider box, out Vector3 center, out Vector3 halfExtents, out Quaternion orientation)
+        internal static void ToWorldSpaceBox(this BoxCollider box, out Vector3 center, out Vector3 halfExtents, out Quaternion orientation)
         {
             ToWorldSpaceBoxOffset(box, Vector3.zero, out center, out halfExtents, out orientation);
         }
@@ -64,7 +64,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="center">Where is the centre of the box in world space.</param>
         /// <param name="halfExtents">Half extents of the box in world space.</param>
         /// <param name="orientation">Which way does the box face in world space.</param>
-        public static void ToWorldSpaceBoxOffset(this BoxCollider box, Vector3 offset, out Vector3 center, out Vector3 halfExtents, out Quaternion orientation, float extraRadius = 0)
+        internal static void ToWorldSpaceBoxOffset(this BoxCollider box, Vector3 offset, out Vector3 center, out Vector3 halfExtents, out Quaternion orientation, float extraRadius = 0)
         {
             orientation = box.transform.rotation;
             center = box.transform.TransformPoint(box.center + offset);
@@ -81,7 +81,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="results">Array of colliders which are inside this sphere</param>
         /// <param name="layerMask">Which layermask should be used</param>
         /// <param name="queryTriggerInteraction">Overrides global Physics.queriesHitTriggers</param>
-        public static int OverlapSphereNonAlloc(SphereCollider sphere, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+        internal static int OverlapSphereNonAlloc(SphereCollider sphere, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
         {
             Vector3 center;
             float radius;
@@ -95,7 +95,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="sphere">Which box should be checked.</param>
         /// <param name="center">Where is the centre of the box in world space.</param>
         /// <param name="radius">The radius of the calculated sphere.</param>
-        public static void ToWorldSpaceSphere(this SphereCollider sphere, out Vector3 center, out float radius)
+        internal static void ToWorldSpaceSphere(this SphereCollider sphere, out Vector3 center, out float radius)
         {
             center = sphere.transform.TransformPoint(sphere.center);
             radius = sphere.radius * MaxVec3(AbsVec3(sphere.transform.lossyScale));
@@ -109,7 +109,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="results">Array of colliders which are inside this capsule</param>
         /// <param name="layerMask">Which layermask should be used</param>
         /// <param name="queryTriggerInteraction">Overrides global Physics.queriesHitTriggers</param>
-        public static int OverlapCapsuleNonAlloc(CapsuleCollider capsule, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+        internal static int OverlapCapsuleNonAlloc(CapsuleCollider capsule, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
         {
             return OverlapCapsuleNonAllocOffset(capsule, Vector3.zero, results, layerMask, queryTriggerInteraction);
         }
@@ -123,7 +123,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="results">Array of colliders which are inside this capsule</param>
         /// <param name="layerMask">Which layermask should be used</param>
         /// <param name="queryTriggerInteraction">Overrides global Physics.queriesHitTriggers</param>
-        public static int OverlapCapsuleNonAllocOffset(CapsuleCollider capsule, Vector3 offset, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal, float extraRadius = 0)
+        internal static int OverlapCapsuleNonAllocOffset(CapsuleCollider capsule, Vector3 offset, Collider[] results, int layerMask = Physics.DefaultRaycastLayers, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal, float extraRadius = 0)
         {
             Vector3 point0, point1;
             float radiusOut;
@@ -138,7 +138,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="point0">Point at the centre of one of the end spheres</param>
         /// <param name="point1">Point at the centre of the other end sphere</param>
         /// <param name="radius">Radius of the capsule.</param>
-        public static void ToWorldSpaceCapsule(this CapsuleCollider capsule, out Vector3 point0, out Vector3 point1, out float radius)
+        internal static void ToWorldSpaceCapsule(this CapsuleCollider capsule, out Vector3 point0, out Vector3 point1, out float radius)
         {
             ToWorldSpaceCapsuleOffset(capsule, Vector3.zero, out point0, out point1, out radius);
         }
@@ -151,7 +151,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="point0">Point at the centre of one of the end spheres of the capsule</param>
         /// <param name="point1">Point at the centre of the other end sphere of the capsule</param>
         /// <param name="radius">Radius of the capsule.</param>
-        public static void ToWorldSpaceCapsuleOffset(this CapsuleCollider capsule, Vector3 offset, out Vector3 point0, out Vector3 point1, out float radius)
+        internal static void ToWorldSpaceCapsuleOffset(this CapsuleCollider capsule, Vector3 offset, out Vector3 point0, out Vector3 point1, out float radius)
         {
             var center = capsule.transform.TransformPoint(capsule.center + offset);
             radius = 0f;
@@ -192,7 +192,7 @@ namespace Leap.Unity.PhysicalHands
         /// </summary>
         /// <param name="v">Vector3 to check</param>
         /// <returns>Returns the absolute value of each element in a new Vector3</returns>
-        public static Vector3 AbsVec3(Vector3 v)
+        internal static Vector3 AbsVec3(Vector3 v)
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
         }
@@ -202,7 +202,7 @@ namespace Leap.Unity.PhysicalHands
         /// </summary>
         /// <param name="v">Vector3 to check</param>
         /// <returns>Highest value</returns>
-        public static float MaxVec3(Vector3 v)
+        internal static float MaxVec3(Vector3 v)
         {
             return Mathf.Max(v.x, Mathf.Max(v.y, v.z));
         }
@@ -214,7 +214,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="value">Value to search for in the array</param>
         /// <param name="maxIndex">How far through the array should we search</param>
         /// <returns>bool</returns>
-        public static bool ContainsRange<T>(this T[] arr, T value, int maxIndex)
+        internal static bool ContainsRange<T>(this T[] arr, T value, int maxIndex)
         {
             return System.Array.IndexOf(arr, value, 0, maxIndex) != -1;
         }
@@ -225,7 +225,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="collider">The collider to check</param>
         /// <param name="point">The point to check</param>
         /// <returns></returns>
-        public static bool IsPointWithinCollider(this Collider collider, Vector3 point)
+        internal static bool IsPointWithinCollider(this Collider collider, Vector3 point)
         {
             return collider.IsSphereWithinCollider(point, 0);
         }
@@ -237,7 +237,7 @@ namespace Leap.Unity.PhysicalHands
         /// <param name="centre">The centre of the sphere</param>
         /// <param name="radius">The radius of the sphere, in meters</param>
         /// <returns></returns>
-        public static bool IsSphereWithinCollider(this Collider collider, Vector3 centre, float radius)
+        internal static bool IsSphereWithinCollider(this Collider collider, Vector3 centre, float radius)
         {
             Vector3 closestPoint = collider.ClosestPoint(centre);
             bool isPointWithinCollider = closestPoint == centre;

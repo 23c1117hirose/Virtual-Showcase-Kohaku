@@ -395,6 +395,49 @@ namespace VirtualShowcase.Utilities
             }
         }
 
+        /// <summary>
+        ///     Leap Motion sensor position in world space (centimeters), found by point calibration.
+        /// </summary>
+        public static Vector3 LeapPosition
+        {
+            get => new Vector3(
+                PlayerPrefs.GetFloat("leapPositionX", 0f),
+                PlayerPrefs.GetFloat("leapPositionY", 0f),
+                PlayerPrefs.GetFloat("leapPositionZ", 0f));
+            set
+            {
+                PlayerPrefs.SetFloat("leapPositionX", value.x);
+                PlayerPrefs.SetFloat("leapPositionY", value.y);
+                PlayerPrefs.SetFloat("leapPositionZ", value.z);
+            }
+        }
+
+        /// <summary>
+        ///     Leap Motion sensor rotation (mounting angle), found by point calibration.
+        ///     Stored as a quaternion to avoid gimbal issues on round trip.
+        /// </summary>
+        public static Quaternion LeapRotation
+        {
+            get => new Quaternion(
+                PlayerPrefs.GetFloat("leapRotationX", 0f),
+                PlayerPrefs.GetFloat("leapRotationY", 0f),
+                PlayerPrefs.GetFloat("leapRotationZ", 0f),
+                PlayerPrefs.GetFloat("leapRotationW", 1f));
+            set
+            {
+                PlayerPrefs.SetFloat("leapRotationX", value.x);
+                PlayerPrefs.SetFloat("leapRotationY", value.y);
+                PlayerPrefs.SetFloat("leapRotationZ", value.z);
+                PlayerPrefs.SetFloat("leapRotationW", value.w);
+            }
+        }
+
+        public static bool LeapCalibrated
+        {
+            get => PlayerPrefs.GetInt("leapCalibrated", 0).ToBool();
+            set => PlayerPrefs.SetInt("leapCalibrated", value.ToInt());
+        }
+
         #endregion
     }
 }
