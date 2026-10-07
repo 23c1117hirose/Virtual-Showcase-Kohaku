@@ -23,6 +23,15 @@ public class FrogTouchController : MonoBehaviour
 
     private bool _wasTouching = false;
 
+    // ← 追加:触れ始めた瞬間を他スクリプトに通知(評価実験のタスク用。引数は接触点のワールド座標)
+    public event System.Action<Vector3> OnTouchStarted;
+
+    // ← 追加:無効化→有効化の際に、古い接触状態が残って「触れ始め」を誤検出しないようにする
+    void OnEnable()
+    {
+        _wasTouching = false;
+    }
+
     void Update()
     {
         if (targetCamera == null) return;
@@ -81,6 +90,11 @@ public class FrogTouchController : MonoBehaviour
             if (justTouched && audioSource != null && touchReactionClip != null)
             {
                 audioSource.PlayOneShot(touchReactionClip);
+            }
+
+            if (justTouched)
+            {
+                OnTouchStarted?.Invoke(hitPoint); // ← 追加
             }
         }
         else

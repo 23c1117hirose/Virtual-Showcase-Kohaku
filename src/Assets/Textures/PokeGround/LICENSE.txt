@@ -1,0 +1,3 @@
+Textures "Brown Mud" by Rob Tuytel, from Poly Haven (https://polyhaven.com/a/brown_mud)
+License: CC0 1.0 Universal (public domain) - free for any use, no attribution required.
+Downloaded 2026-10-08 via the Poly Haven API (1k JPG: diffuse, normal OpenGL).

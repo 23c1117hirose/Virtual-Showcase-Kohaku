@@ -10,6 +10,9 @@ public class FrogVocalizer : MonoBehaviour
     [HideInInspector]
     public bool isPaused = false; // ← 追加:接触中はtrueにする
 
+    [HideInInspector]
+    public bool autoCroak = true; // ← 追加:評価実験中はfalseにしてランダムな鳴き声を止める(タイマーは止めない)
+
     public event System.Action<AudioClip> OnCroak; // ← 追加:鳴いたタイミングを他スクリプトに通知(喉袋の膨らみ用)
 
     void Start()
@@ -26,7 +29,7 @@ public class FrogVocalizer : MonoBehaviour
 
     void Croak()
     {
-        if (!isPaused) // ← 一時停止中でなければ再生
+        if (!isPaused && autoCroak) // ← 一時停止中でなければ再生(autoCroakを追加)
         {
             if (croakClips != null && croakClips.Length > 0)
             {
