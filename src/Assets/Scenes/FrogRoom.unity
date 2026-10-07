@@ -123,7 +123,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &8077665
+--- !u!1 &23912615
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,116 +131,65 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8077666}
-  - component: {fileID: 8077668}
-  - component: {fileID: 8077667}
+  - component: {fileID: 23912616}
+  - component: {fileID: 23912617}
   m_Layer: 0
-  m_Name: PokeField Light
+  m_Name: GrassPatch_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8077666
+--- !u!4 &23912616
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8077665}
+  m_GameObject: {fileID: 23912615}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.44037747, y: 0.26672933, z: -0.13885048, w: 0.8459573}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -18.2, y: 0, z: 10.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 568919044}
+  m_Father: {fileID: 1617825762}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8077667
+--- !u!114 &23912617
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8077665}
+  m_GameObject: {fileID: 23912615}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Script: {fileID: 11500000, guid: 6630bdd52e04caf4f9b8ddb74a84b981, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 3
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 0
---- !u!108 &8077668
-Light:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8077665}
-  m_Enabled: 1
-  serializedVersion: 10
-  m_Type: 1
-  m_Shape: 0
-  m_Color: {r: 1, g: 0.95, b: 0.85, a: 1}
-  m_Intensity: 1.2
-  m_Range: 10
-  m_SpotAngle: 30
-  m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
-  m_Shadows:
-    m_Type: 2
-    m_Resolution: -1
-    m_CustomResolution: -1
-    m_Strength: 0.85
-    m_Bias: 0.05
-    m_NormalBias: 0.4
-    m_NearPlane: 0.2
-    m_CullingMatrixOverride:
-      e00: 1
-      e01: 0
-      e02: 0
-      e03: 0
-      e10: 0
-      e11: 1
-      e12: 0
-      e13: 0
-      e20: 0
-      e21: 0
-      e22: 1
-      e23: 0
-      e30: 0
-      e31: 0
-      e32: 0
-      e33: 1
-    m_UseCullingMatrixOverride: 0
-  m_Cookie: {fileID: 0}
-  m_DrawHalo: 0
-  m_Flare: {fileID: 0}
-  m_RenderMode: 0
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingLayerMask: 1
-  m_Lightmapping: 4
-  m_LightShadowCasterMode: 0
-  m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
-  m_ColorTemperature: 6570
-  m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
-  m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
-  m_ShadowRadius: 0
-  m_ShadowAngle: 0
+  frogAnchor: {fileID: 0}
+  hopAngleDegrees: -42.69321
+  hopDistance: 10.326082
+  frogLocalOffset: {x: 0, y: 0, z: 0}
+  frogEulerOffset: {x: 0, y: 0, z: 0}
+  cueSource: {fileID: 0}
+  touchRadius: 6.5
+  generateBlades: 1
+  bladeMaterial: {fileID: 0}
+  bladeCount: 330
+  bladeHeight: {x: 6, y: 9.5}
+  bladeWidth: 0.6
+  spreadRadius: 3.2
+  subClumpSpread: 4.2
+  mediumScale: 0.75
+  smallScale: 0.5
+  flareDegrees: 28
+  flarePower: 1.1
+  droopDegrees: 70
+  edgeHeightScale: 0.65
+  centerBias: 0.7
+  bladeBend: 1.2
+  bladeSeed: 1
 --- !u!1 &64108040
 GameObject:
   m_ObjectHideFlags: 0
@@ -919,17 +868,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 276592121}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!137 &353948708 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 508945693385165244, guid: 8e0fbeda1179e774da6992760eebb4f1, type: 3}
-  m_PrefabInstance: {fileID: 1686889614}
-  m_PrefabAsset: {fileID: 0}
---- !u!20 &495757939 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 2702192816293590792, guid: 5cc76807adcae6a4ba6b4522ff1ae677, type: 3}
-  m_PrefabInstance: {fileID: 963509227}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &568919043
+--- !u!1 &324872131
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -937,70 +876,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 568919044}
-  - component: {fileID: 568919045}
-  m_Layer: 0
-  m_Name: PokeField
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &568919044
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568919043}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.38268346, y: 0, z: 0, w: 0.9238795}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1351918053}
-  - {fileID: 8077666}
-  - {fileID: 911203714}
-  - {fileID: 1159103303}
-  - {fileID: 2072344406}
-  - {fileID: 780337186}
-  - {fileID: 571089930}
-  - {fileID: 1574727207}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &568919045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568919043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42ad42d69ba405e4183682f9df02c1fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  areaCenter: {x: 0, y: -1}
-  areaSize: {x: 64, y: 44}
-  fadeStart: 0.75
-  pebbleCount: 45
-  pebbleRadius: {x: 0.25, y: 0.9}
-  tuftCount: 16
-  tuftHeight: {x: 1.5, y: 3.5}
-  clumpClearance: 7
-  landingClearance: 4.5
-  seed: 7
---- !u!1 &571089929
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 571089930}
-  - component: {fileID: 571089931}
+  - component: {fileID: 324872132}
+  - component: {fileID: 324872133}
   m_Layer: 0
   m_Name: GrassPatch_5
   m_TagString: Untagged
@@ -1008,28 +885,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &571089930
+--- !u!4 &324872132
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 571089929}
+  m_GameObject: {fileID: 324872131}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.2, y: -0, z: -14.2}
+  m_LocalPosition: {x: 2.8, y: 0, z: -14.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 568919044}
+  m_Father: {fileID: 1617825762}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &571089931
+--- !u!114 &324872133
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 571089929}
+  m_GameObject: {fileID: 324872131}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6630bdd52e04caf4f9b8ddb74a84b981, type: 3}
@@ -1041,14 +918,14 @@ MonoBehaviour:
   frogLocalOffset: {x: 0, y: 0, z: 0}
   frogEulerOffset: {x: 0, y: 0, z: 0}
   cueSource: {fileID: 0}
-  touchRadius: 4.5
+  touchRadius: 6.5
   generateBlades: 1
   bladeMaterial: {fileID: 0}
-  bladeCount: 220
-  bladeHeight: {x: 4, y: 6.5}
+  bladeCount: 330
+  bladeHeight: {x: 6, y: 9.5}
   bladeWidth: 0.6
-  spreadRadius: 2.2
-  subClumpSpread: 3
+  spreadRadius: 3.2
+  subClumpSpread: 4.2
   mediumScale: 0.75
   smallScale: 0.5
   flareDegrees: 28
@@ -1058,7 +935,17 @@ MonoBehaviour:
   centerBias: 0.7
   bladeBend: 1.2
   bladeSeed: 5
---- !u!1 &698325397
+--- !u!137 &353948708 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 508945693385165244, guid: 8e0fbeda1179e774da6992760eebb4f1, type: 3}
+  m_PrefabInstance: {fileID: 1686889614}
+  m_PrefabAsset: {fileID: 0}
+--- !u!20 &495757939 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 2702192816293590792, guid: 5cc76807adcae6a4ba6b4522ff1ae677, type: 3}
+  m_PrefabInstance: {fileID: 963509227}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &596369889
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1066,8 +953,75 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 698325399}
-  - component: {fileID: 698325398}
+  - component: {fileID: 596369890}
+  - component: {fileID: 596369891}
+  m_Layer: 0
+  m_Name: GrassPatch_3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &596369890
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596369889}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 21.4, y: -0, z: 7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1617825762}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &596369891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596369889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6630bdd52e04caf4f9b8ddb74a84b981, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frogAnchor: {fileID: 0}
+  hopAngleDegrees: 61.71956
+  hopDistance: 10.13981
+  frogLocalOffset: {x: 0, y: 0, z: 0}
+  frogEulerOffset: {x: 0, y: 0, z: 0}
+  cueSource: {fileID: 0}
+  touchRadius: 6.5
+  generateBlades: 1
+  bladeMaterial: {fileID: 0}
+  bladeCount: 330
+  bladeHeight: {x: 6, y: 9.5}
+  bladeWidth: 0.6
+  spreadRadius: 3.2
+  subClumpSpread: 4.2
+  mediumScale: 0.75
+  smallScale: 0.5
+  flareDegrees: 28
+  flarePower: 1.1
+  droopDegrees: 70
+  edgeHeightScale: 0.65
+  centerBias: 0.7
+  bladeBend: 1.2
+  bladeSeed: 3
+--- !u!1 &821655931
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 821655933}
+  - component: {fileID: 821655932}
   m_Layer: 0
   m_Name: PokeTask
   m_TagString: Untagged
@@ -1075,26 +1029,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &698325398
+--- !u!114 &821655932
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 698325397}
+  m_GameObject: {fileID: 821655931}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 270b4958f1e678c4e909e9f2fcebe494, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   patches:
-  - {fileID: 911203715}
-  - {fileID: 1159103304}
-  - {fileID: 2072344407}
-  - {fileID: 780337187}
-  - {fileID: 571089931}
-  - {fileID: 1574727206}
-  fieldRoot: {fileID: 568919043}
+  - {fileID: 23912617}
+  - {fileID: 2079699751}
+  - {fileID: 596369891}
+  - {fileID: 1489140005}
+  - {fileID: 324872133}
+  - {fileID: 1524652230}
+  fieldRoot: {fileID: 1617825761}
   frogTouch: {fileID: 1794351238}
   vocalizer: {fileID: 1811902516}
   leapProvider: {fileID: 191006622}
@@ -1118,13 +1072,13 @@ MonoBehaviour:
   startPracticeKey: 286
   startMainKey: 287
   abortKey: 288
---- !u!4 &698325399
+--- !u!4 &821655933
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 698325397}
+  m_GameObject: {fileID: 821655931}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -1133,73 +1087,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &780337185
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 780337186}
-  - component: {fileID: 780337187}
-  m_Layer: 0
-  m_Name: GrassPatch_4
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &780337186
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 780337185}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18.2, y: -0, z: -9.6}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 568919044}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &780337187
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 780337185}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6630bdd52e04caf4f9b8ddb74a84b981, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  frogAnchor: {fileID: 0}
-  hopAngleDegrees: -117.253204
-  hopDistance: 11.858166
-  frogLocalOffset: {x: 0, y: 0, z: 0}
-  frogEulerOffset: {x: 0, y: 0, z: 0}
-  cueSource: {fileID: 0}
-  touchRadius: 4.5
-  generateBlades: 1
-  bladeMaterial: {fileID: 0}
-  bladeCount: 220
-  bladeHeight: {x: 4, y: 6.5}
-  bladeWidth: 0.6
-  spreadRadius: 2.2
-  subClumpSpread: 3
-  mediumScale: 0.75
-  smallScale: 0.5
-  flareDegrees: 28
-  flarePower: 1.1
-  droopDegrees: 70
-  edgeHeightScale: 0.65
-  centerBias: 0.7
-  bladeBend: 1.2
-  bladeSeed: 4
 --- !u!1 &848092811 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7690834451409390920, guid: 5cc76807adcae6a4ba6b4522ff1ae677, type: 3}
@@ -1355,73 +1242,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1794351237}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &911203713
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 911203714}
-  - component: {fileID: 911203715}
-  m_Layer: 0
-  m_Name: GrassPatch_1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &911203714
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 911203713}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16, y: -0, z: 10.2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 568919044}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &911203715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 911203713}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6630bdd52e04caf4f9b8ddb74a84b981, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  frogAnchor: {fileID: 0}
-  hopAngleDegrees: -42.69321
-  hopDistance: 10.326082
-  frogLocalOffset: {x: 0, y: 0, z: 0}
-  frogEulerOffset: {x: 0, y: 0, z: 0}
-  cueSource: {fileID: 0}
-  touchRadius: 4.5
-  generateBlades: 1
-  bladeMaterial: {fileID: 0}
-  bladeCount: 220
-  bladeHeight: {x: 4, y: 6.5}
-  bladeWidth: 0.6
-  spreadRadius: 2.2
-  subClumpSpread: 3
-  mediumScale: 0.75
-  smallScale: 0.5
-  flareDegrees: 28
-  flarePower: 1.1
-  droopDegrees: 70
-  edgeHeightScale: 0.65
-  centerBias: 0.7
-  bladeBend: 1.2
-  bladeSeed: 1
 --- !u!1 &917076905
 GameObject:
   m_ObjectHideFlags: 0
@@ -1454,6 +1274,89 @@ Transform:
   - {fileID: 64108041}
   m_Father: {fileID: 116240760}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &919924357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 919924358}
+  - component: {fileID: 919924360}
+  - component: {fileID: 919924359}
+  m_Layer: 0
+  m_Name: Ground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &919924358
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919924357}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalScale: {x: 6.4, y: 1, z: 4.4}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1617825762}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &919924359
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919924357}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: dcd4d87464c52544681e7d9a44d515b5, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &919924360
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919924357}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &925097777 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8496437169674211889, guid: 5cc76807adcae6a4ba6b4522ff1ae677, type: 3}
@@ -2237,73 +2140,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1159103302
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1159103303}
-  - component: {fileID: 1159103304}
-  m_Layer: 0
-  m_Name: GrassPatch_2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1159103303
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1159103302}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.8, y: 0, z: 15.8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 568919044}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1159103304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1159103302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6630bdd52e04caf4f9b8ddb74a84b981, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  frogAnchor: {fileID: 0}
-  hopAngleDegrees: -35.47876
-  hopDistance: 8.842441
-  frogLocalOffset: {x: 0, y: 0, z: 0}
-  frogEulerOffset: {x: 0, y: 0, z: 0}
-  cueSource: {fileID: 0}
-  touchRadius: 4.5
-  generateBlades: 1
-  bladeMaterial: {fileID: 0}
-  bladeCount: 220
-  bladeHeight: {x: 4, y: 6.5}
-  bladeWidth: 0.6
-  spreadRadius: 2.2
-  subClumpSpread: 3
-  mediumScale: 0.75
-  smallScale: 0.5
-  flareDegrees: 28
-  flarePower: 1.1
-  droopDegrees: 70
-  edgeHeightScale: 0.65
-  centerBias: 0.7
-  bladeBend: 1.2
-  bladeSeed: 2
 --- !u!1 &1224585784
 GameObject:
   m_ObjectHideFlags: 0
@@ -2438,6 +2274,124 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1224585784}
   m_CullTransparentMesh: 1
+--- !u!1 &1244437192
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1244437193}
+  - component: {fileID: 1244437195}
+  - component: {fileID: 1244437194}
+  m_Layer: 0
+  m_Name: PokeField Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1244437193
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1244437192}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.44037747, y: 0.26672933, z: -0.13885048, w: 0.8459573}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1617825762}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1244437194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1244437192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+--- !u!108 &1244437195
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1244437192}
+  m_Enabled: 1
+  serializedVersion: 10
+  m_Type: 1
+  m_Shape: 0
+  m_Color: {r: 1, g: 0.95, b: 0.85, a: 1}
+  m_Intensity: 1.2
+  m_Range: 10
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 2
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 0.85
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
 --- !u!1 &1251082379
 GameObject:
   m_ObjectHideFlags: 0
@@ -2631,89 +2585,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1337167838}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1351918052
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1351918053}
-  - component: {fileID: 1351918055}
-  - component: {fileID: 1351918054}
-  m_Layer: 0
-  m_Name: Ground
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1351918053
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1351918052}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
-  m_LocalScale: {x: 6.4, y: 1, z: 4.4}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 568919044}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &1351918054
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1351918052}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: dcd4d87464c52544681e7d9a44d515b5, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 1
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &1351918055
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1351918052}
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1001 &1381009360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2811,7 +2682,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7dfd6ef22fd1d38439bcd438ba284e63, type: 3}
---- !u!1 &1574727205
+--- !u!1 &1489140003
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2819,8 +2690,75 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1574727207}
-  - component: {fileID: 1574727206}
+  - component: {fileID: 1489140004}
+  - component: {fileID: 1489140005}
+  m_Layer: 0
+  m_Name: GrassPatch_4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1489140004
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1489140003}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -21.3, y: 0, z: -6.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1617825762}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1489140005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1489140003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6630bdd52e04caf4f9b8ddb74a84b981, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frogAnchor: {fileID: 0}
+  hopAngleDegrees: -117.253204
+  hopDistance: 11.858166
+  frogLocalOffset: {x: 0, y: 0, z: 0}
+  frogEulerOffset: {x: 0, y: 0, z: 0}
+  cueSource: {fileID: 0}
+  touchRadius: 6.5
+  generateBlades: 1
+  bladeMaterial: {fileID: 0}
+  bladeCount: 330
+  bladeHeight: {x: 6, y: 9.5}
+  bladeWidth: 0.6
+  spreadRadius: 3.2
+  subClumpSpread: 4.2
+  mediumScale: 0.75
+  smallScale: 0.5
+  flareDegrees: 28
+  flarePower: 1.1
+  droopDegrees: 70
+  edgeHeightScale: 0.65
+  centerBias: 0.7
+  bladeBend: 1.2
+  bladeSeed: 4
+--- !u!1 &1524652229
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1524652231}
+  - component: {fileID: 1524652230}
   m_Layer: 0
   m_Name: GrassPatch_6
   m_TagString: Untagged
@@ -2828,13 +2766,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1574727206
+--- !u!114 &1524652230
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1574727205}
+  m_GameObject: {fileID: 1524652229}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6630bdd52e04caf4f9b8ddb74a84b981, type: 3}
@@ -2846,14 +2784,14 @@ MonoBehaviour:
   frogLocalOffset: {x: 0, y: 0, z: 0}
   frogEulerOffset: {x: 0, y: 0, z: 0}
   cueSource: {fileID: 0}
-  touchRadius: 4.5
+  touchRadius: 6.5
   generateBlades: 1
   bladeMaterial: {fileID: 0}
-  bladeCount: 220
-  bladeHeight: {x: 4, y: 6.5}
+  bladeCount: 330
+  bladeHeight: {x: 6, y: 9.5}
   bladeWidth: 0.6
-  spreadRadius: 2.2
-  subClumpSpread: 3
+  spreadRadius: 3.2
+  subClumpSpread: 4.2
   mediumScale: 0.75
   smallScale: 0.5
   flareDegrees: 28
@@ -2863,20 +2801,20 @@ MonoBehaviour:
   centerBias: 0.7
   bladeBend: 1.2
   bladeSeed: 6
---- !u!4 &1574727207
+--- !u!4 &1524652231
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1574727205}
+  m_GameObject: {fileID: 1524652229}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.2, y: 0, z: -8.1}
+  m_LocalPosition: {x: 16.5, y: -0, z: -8.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 568919044}
+  m_Father: {fileID: 1617825762}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1601632734
 GameObject:
@@ -3044,6 +2982,68 @@ Transform:
   - {fileID: 276592122}
   m_Father: {fileID: 116240760}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1617825761
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1617825762}
+  - component: {fileID: 1617825763}
+  m_Layer: 0
+  m_Name: PokeField
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1617825762
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617825761}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.38268346, y: 0, z: 0, w: 0.9238795}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 919924358}
+  - {fileID: 1244437193}
+  - {fileID: 23912616}
+  - {fileID: 2079699750}
+  - {fileID: 596369890}
+  - {fileID: 1489140004}
+  - {fileID: 324872132}
+  - {fileID: 1524652231}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1617825763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617825761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42ad42d69ba405e4183682f9df02c1fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  areaCenter: {x: 0, y: -1}
+  areaSize: {x: 64, y: 44}
+  fadeStart: 0.75
+  pebbleCount: 45
+  pebbleRadius: {x: 0.25, y: 0.9}
+  tuftCount: 16
+  tuftHeight: {x: 1.5, y: 3.5}
+  clumpClearance: 10
+  landingClearance: 4.5
+  seed: 7
 --- !u!1001 &1686889614
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6920,7 +6920,7 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8804230292916263055, guid: 8e0fbeda1179e774da6992760eebb4f1, type: 3}
   m_PrefabInstance: {fileID: 1686889614}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2072344405
+--- !u!1 &2079699749
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6928,56 +6928,56 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2072344406}
-  - component: {fileID: 2072344407}
+  - component: {fileID: 2079699750}
+  - component: {fileID: 2079699751}
   m_Layer: 0
-  m_Name: GrassPatch_3
+  m_Name: GrassPatch_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2072344406
+--- !u!4 &2079699750
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2072344405}
+  m_GameObject: {fileID: 2079699749}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 19.5, y: 0, z: 7.1}
+  m_LocalPosition: {x: -2.8, y: 0, z: 14.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 568919044}
+  m_Father: {fileID: 1617825762}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2072344407
+--- !u!114 &2079699751
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2072344405}
+  m_GameObject: {fileID: 2079699749}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6630bdd52e04caf4f9b8ddb74a84b981, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   frogAnchor: {fileID: 0}
-  hopAngleDegrees: 61.71956
-  hopDistance: 10.13981
+  hopAngleDegrees: -35.47876
+  hopDistance: 8.842441
   frogLocalOffset: {x: 0, y: 0, z: 0}
   frogEulerOffset: {x: 0, y: 0, z: 0}
   cueSource: {fileID: 0}
-  touchRadius: 4.5
+  touchRadius: 6.5
   generateBlades: 1
   bladeMaterial: {fileID: 0}
-  bladeCount: 220
-  bladeHeight: {x: 4, y: 6.5}
+  bladeCount: 330
+  bladeHeight: {x: 6, y: 9.5}
   bladeWidth: 0.6
-  spreadRadius: 2.2
-  subClumpSpread: 3
+  spreadRadius: 3.2
+  subClumpSpread: 4.2
   mediumScale: 0.75
   smallScale: 0.5
   flareDegrees: 28
@@ -6986,7 +6986,7 @@ MonoBehaviour:
   edgeHeightScale: 0.65
   centerBias: 0.7
   bladeBend: 1.2
-  bladeSeed: 3
+  bladeSeed: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -7001,5 +7001,5 @@ SceneRoots:
   - {fileID: 851104180}
   - {fileID: 1157217063}
   - {fileID: 1698704405}
-  - {fileID: 568919044}
-  - {fileID: 698325399}
+  - {fileID: 1617825762}
+  - {fileID: 821655933}
