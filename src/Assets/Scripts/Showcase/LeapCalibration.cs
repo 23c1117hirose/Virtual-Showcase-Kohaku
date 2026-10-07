@@ -77,9 +77,21 @@ namespace VirtualShowcase.Showcase
         [SerializeField]
         private float sampleSeconds = 0.5f;
 
+        [Tooltip("Hide the frog and switch off its touch reaction during calibration, so it does not cover " +
+                 "the markers (one of them sits at the origin where the frog is) or react to the fingertip.")]
+        [SerializeField]
+        private bool hideFrogWhileCalibrating = true;
+
+        [Tooltip("Measure the scale from the three touched points instead of deriving it from the ScreenSize setting. " +
+                 "Corrects a ScreenSize that differs from the real display (virtual hand too small / too deep).")]
+        [SerializeField]
+        private bool estimateScaleFromPoints = true;
+
         #endregion
 
         private readonly List<Vector3> _recordedSensorPoints = new List<Vector3>();
+        private readonly List<Renderer> _hiddenFrogRenderers = new List<Renderer>();
+        private FrogTouchController _suspendedFrogTouch;
 
         private LeapCalibrationState _state = LeapCalibrationState.Off;
         private bool _isSampling;
@@ -88,20 +100,32 @@ namespace VirtualShowcase.Showcase
         public bool Enabled => _state != LeapCalibrationState.Off;
 
         /// <summary>
-        ///     Unity units per Leap Motion meter.
+        ///     Unity units per Leap Motion meter, derived from the ScreenSize setting.
         ///     One Unity unit is one centimeter (see Projection.DiagonalToWidthAndHeight),
         ///     so a meter is 100 units. The scene is always built for a
         ///     SCREEN_BASE_DIAGONAL_INCHES display, and a differently sized physical display is
         ///     compensated by the same ratio Projection.SetCameraDistance uses.
+        ///     Only correct while ScreenSize equals the real display's diagonal.
         /// </summary>
-        private static float CurrentScale =>
+        private static float AnalyticScale =>
             100f * ((float)Constants.SCREEN_BASE_DIAGONAL_INCHES / MyPrefs.ScreenSize);
+
+        /// <summary>
+        ///     The scale measured by the last point calibration if there is one, otherwise <see cref="AnalyticScale" />.
+        ///     The measured value describes the physical display and does not depend on the ScreenSize setting.
+        /// </summary>
+        private static float CurrentScale => MyPrefs.LeapScale > 0f ? MyPrefs.LeapScale : AnalyticScale;
 
         #region Event Functions
 
         private void OnEnable()
         {
             MyEvents.ScreenSizeChanged.AddListener((sender, size) => ApplyScale());
+        }
+
+        private void OnDisable()
+        {
+            RestoreFrog();
         }
 
         private void Start()
@@ -180,6 +204,7 @@ namespace VirtualShowcase.Showcase
             // with the markers, instead of showing it in a colour: an unaligned virtual hand
             // right next to the target would only make the real fingertip harder to see.
             SetHandsVisible(false);
+            HideFrog();
             UpdateGuideText();
         }
 
@@ -190,7 +215,61 @@ namespace VirtualShowcase.Showcase
 
             SetTargetsVisible(false);
             SetHandsVisible(true);
+            RestoreFrog();
             SetGuideText(string.Empty);
+        }
+
+        /// <summary>
+        ///     Hides every renderer of the frog and switches its touch controller off, remembering what
+        ///     was changed. Renderers are toggled instead of deactivating the object, so the frog's
+        ///     timers (croaking) keep running.
+        /// </summary>
+        private void HideFrog()
+        {
+            if (!hideFrogWhileCalibrating || _suspendedFrogTouch != null)
+            {
+                return;
+            }
+
+            FrogTouchController frogTouch = FindObjectOfType<FrogTouchController>();
+            if (frogTouch == null)
+            {
+                return;
+            }
+
+            foreach (Renderer frogRenderer in frogTouch.GetComponentsInChildren<Renderer>())
+            {
+                if (frogRenderer.enabled)
+                {
+                    frogRenderer.enabled = false;
+                    _hiddenFrogRenderers.Add(frogRenderer);
+                }
+            }
+
+            if (frogTouch.enabled)
+            {
+                frogTouch.enabled = false;
+                _suspendedFrogTouch = frogTouch;
+            }
+        }
+
+        private void RestoreFrog()
+        {
+            foreach (Renderer frogRenderer in _hiddenFrogRenderers)
+            {
+                if (frogRenderer != null)
+                {
+                    frogRenderer.enabled = true;
+                }
+            }
+
+            _hiddenFrogRenderers.Clear();
+
+            if (_suspendedFrogTouch != null)
+            {
+                _suspendedFrogTouch.enabled = true;
+                _suspendedFrogTouch = null;
+            }
         }
 
         private void LoadCalibration()
@@ -203,15 +282,17 @@ namespace VirtualShowcase.Showcase
             leapProviderTransform.SetPositionAndRotation(MyPrefs.LeapPosition, MyPrefs.LeapRotation);
         }
 
-        private void SaveCalibration()
+        private void SaveCalibration(float scale)
         {
             MyPrefs.LeapPosition = leapProviderTransform.position;
             MyPrefs.LeapRotation = leapProviderTransform.rotation;
+            MyPrefs.LeapScale = scale;
             MyPrefs.LeapCalibrated = true;
         }
 
         /// <summary>
-        ///     Keeps the sensor scale in sync with the configured display size.
+        ///     Applies <see cref="CurrentScale" />: the measured scale once calibrated, otherwise the one
+        ///     derived from the configured display size (which then follows ScreenSize changes).
         ///     Position and rotation are not touched, they come from the point calibration.
         /// </summary>
         private void ApplyScale()
@@ -330,7 +411,9 @@ namespace VirtualShowcase.Showcase
 
             Quaternion rotation = worldFrame * Quaternion.Inverse(sensorFrame);
 
-            float scale = CurrentScale;
+            float analyticScale = AnalyticScale;
+            float measuredScale = EstimateScale(p0, p1, p2, q0, q1, q2);
+            float scale = estimateScaleFromPoints ? measuredScale : analyticScale;
             Vector3 sensorCentroid = (p0 + p1 + p2) / 3f;
             Vector3 worldCentroid = (q0 + q1 + q2) / 3f;
             Vector3 position = worldCentroid - rotation * (sensorCentroid * scale);
@@ -338,13 +421,46 @@ namespace VirtualShowcase.Showcase
             leapProviderTransform.SetPositionAndRotation(position, rotation);
             leapProviderTransform.localScale = Vector3.one * scale;
 
-            SaveCalibration();
+            // 0 means "not measured": the scale then keeps following the ScreenSize setting.
+            SaveCalibration(estimateScaleFromPoints ? scale : 0f);
+
+            // The display diagonal that the measured scale implies. If it is far from the
+            // real display's diagonal, the ScreenSize setting is probably wrong.
+            float impliedInches = Constants.SCREEN_BASE_DIAGONAL_INCHES * 100f / scale;
 
             _state = LeapCalibrationState.Done;
             SetTargetsVisible(false);
             SetHandsVisible(true);
-            SetGuideText("Calibration saved.");
-            Debug.Log($"[LeapCalibration] position={position}, rotation={rotation.eulerAngles}, scale={scale}");
+            RestoreFrog();
+            SetGuideText($"Calibration saved. scale={scale:F1} (display ~{impliedInches:F1} in)");
+            Debug.Log($"[LeapCalibration] position={position}, rotation={rotation.eulerAngles}, " +
+                      $"scale={scale:F2} (measured {measuredScale:F2}, from ScreenSize {analyticScale:F2}), " +
+                      $"implied display diagonal={impliedInches:F1} in, ScreenSize setting={MyPrefs.ScreenSize} in, " +
+                      $"side ratios={SideRatios(p0, p1, p2, q0, q1, q2)}");
+        }
+
+        /// <summary>
+        ///     Unity units per sensor meter, measured as the ratio of the summed side lengths of the
+        ///     touched triangle in the scene to the same triangle in sensor space.
+        ///     Summing makes the long sides dominate, so fingertip jitter matters less.
+        /// </summary>
+        private static float EstimateScale(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 q0, Vector3 q1, Vector3 q2)
+        {
+            float sensorLength = (p1 - p0).magnitude + (p2 - p1).magnitude + (p0 - p2).magnitude;
+            float worldLength = (q1 - q0).magnitude + (q2 - q1).magnitude + (q0 - q2).magnitude;
+            return worldLength / sensorLength;
+        }
+
+        /// <summary>
+        ///     Per-side scale ratios for the log. They should all be about the same,
+        ///     if not the points were touched carelessly or the sensor axes are distorted.
+        /// </summary>
+        private static string SideRatios(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 q0, Vector3 q1, Vector3 q2)
+        {
+            float r01 = (q1 - q0).magnitude / (p1 - p0).magnitude;
+            float r12 = (q2 - q1).magnitude / (p2 - p1).magnitude;
+            float r20 = (q0 - q2).magnitude / (p0 - p2).magnitude;
+            return $"{r01:F1}/{r12:F1}/{r20:F1}";
         }
 
         /// <returns>Whether the points are non-collinear.</returns>

@@ -7,6 +7,10 @@ namespace VirtualShowcase.FaceTracking.Transform
         [SerializeField]
         private FaceDistanceVolumeController distanceController;
 
+        [Tooltip("オフにすると倍率が常に1(物理的に正しい投影)になる。Leap Motionで実際の手に触れる用途ではオフにすること。")]
+        [SerializeField]
+        private bool enableCorrection = true;
+
         [Header("歪みの強さの変化範囲")]
         [SerializeField]
         private float minMultiplier = 0.85f; // 遠い時(歪みが弱くなる、望遠的)
@@ -33,7 +37,7 @@ namespace VirtualShowcase.FaceTracking.Transform
         {
             float targetMultiplier = 1f; // 基準値(何もない時は1.0=元のまま)
 
-            if (distanceController != null && distanceController.HasValidDepth)
+            if (enableCorrection && distanceController != null && distanceController.HasValidDepth)
             {
                 float depth = distanceController.CurrentDepthCm;
                 float t = Mathf.InverseLerp(closeDistanceCm, farDistanceCm, depth);

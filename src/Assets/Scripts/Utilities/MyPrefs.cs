@@ -438,6 +438,16 @@ namespace VirtualShowcase.Utilities
             set => PlayerPrefs.SetInt("leapCalibrated", value.ToInt());
         }
 
+        /// <summary>
+        ///     Unity units per Leap Motion meter, measured by point calibration (0 = not measured yet).
+        ///     Independent of <see cref="ScreenSize" />: it describes the physical display the markers were shown on.
+        /// </summary>
+        public static float LeapScale
+        {
+            get => PlayerPrefs.GetFloat("leapScale", 0f);
+            set => PlayerPrefs.SetFloat("leapScale", value);
+        }
+
         #endregion
     }
 }
