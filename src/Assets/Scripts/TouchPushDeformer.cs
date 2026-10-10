@@ -30,11 +30,16 @@ namespace Deform
                 transform.InverseTransformDirection(PushDirection)
             );
 
+            // Factorはシーン単位(カエルが通常の大きさのときのcm)で指定する。スキン付きFBXなどはメッシュ側の単位が
+            // 大きく異なる(メッシュのオブジェクトに巨大なスケールが付く)ことがあるため、メッシュ自身の単位に換算する。
+            // 一番上の親(FrogModel)のスケールとの比を使うので、カエル全体を拡縮しても変形量は体に比例して変わる。
+            float meshUnits = transform.lossyScale.x / Mathf.Max(transform.root.lossyScale.x, 1e-6f);
+
             return new PushJob
             {
                 meshToAxis = meshToAxis,
                 radius = Radius,
-                factor = Factor,
+                factor = Factor / Mathf.Max(meshUnits, 1e-6f),
                 pushDir = localPushDir,
                 vertices = data.DynamicNative.VertexBuffer
             }.Schedule(data.Length, 64, dependency);

@@ -320,7 +320,7 @@ Transform:
   m_GameObject: {fileID: 102511870}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.03, z: -2.87}
+  m_LocalPosition: {x: 0.010417288, y: -0.25140163, z: -2.2976928}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1079,6 +1079,13 @@ MonoBehaviour:
   playLandingSound: 1
   landingClip: {fileID: 0}
   landingVolume: 0.5
+  useAnimation: 1
+  frogAnimator: {fileID: 0}
+  animationSpeed: 1.8
+  clipTakeoffSeconds: 0.625
+  clipLandingSeconds: 1.375
+  clipLengthSeconds: 1.792
+  animatedArcHeight: 0.5
   cueClips: []
   startPracticeKey: 286
   startMainKey: 287
@@ -1108,15 +1115,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: fc886b03a9f8a3e4f86ef84aed997223, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.31865054
+      value: 0.20804721
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fc886b03a9f8a3e4f86ef84aed997223, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.6196365
+      value: 0.6830666
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fc886b03a9f8a3e4f86ef84aed997223, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.57617396
+      value: -0.36786383
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fc886b03a9f8a3e4f86ef84aed997223, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1241,7 +1248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   update: 1
   Axis: {fileID: 102511871}
-  Radius: 4.5
+  Radius: 3.786395
   Factor: 0
 --- !u!114 &838758495
 MonoBehaviour:
@@ -1257,7 +1264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   update: 1
   Axis: {fileID: 892351862}
-  Radius: 2.8
+  Radius: 1.9790416
   Factor: 0
 --- !u!114 &838758496
 MonoBehaviour:
@@ -1461,7 +1468,7 @@ Transform:
   m_GameObject: {fileID: 892351861}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.73, z: 0}
+  m_LocalPosition: {x: 0.010417288, y: 0.42822453, z: -0.10995046}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

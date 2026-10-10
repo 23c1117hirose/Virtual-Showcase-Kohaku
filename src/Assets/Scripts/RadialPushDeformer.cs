@@ -31,12 +31,17 @@ namespace Deform
             // 押し出しの中心点だけメッシュのローカル空間へ変換しておく(方向は頂点ごとに変わる)。
             float3 axisOriginInMeshSpace = transform.InverseTransformPoint(Axis.position);
 
+            // Factorはシーン単位(カエルが通常の大きさのときのcm)で指定する。メッシュ側の単位が違っても
+            // (スキン付きFBXではメッシュのオブジェクトに巨大なスケールが付く)同じ膨らみ量になるよう、
+            // メッシュ自身の単位に換算する。一番上の親(FrogModel)のスケールとの比を使う。
+            float meshUnits = transform.lossyScale.x / Mathf.Max(transform.root.lossyScale.x, 1e-6f);
+
             return new RadialPushJob
             {
                 meshToAxis = meshToAxis,
                 axisOriginInMeshSpace = axisOriginInMeshSpace,
                 radius = Radius,
-                factor = Factor,
+                factor = Factor / Mathf.Max(meshUnits, 1e-6f),
                 vertices = data.DynamicNative.VertexBuffer
             }.Schedule(data.Length, 64, dependency);
         }

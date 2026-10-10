@@ -29,6 +29,9 @@ public static class PokeTaskSmokeTest
     private static float _startY;
     private static Quaternion _boneStart;
     private static int _errors;
+    private static float _maxDeform;
+    private static float _nextDeformSample;
+    private static Vector3[] _originalVertices;
     private static readonly List<string> ErrorTexts = new List<string>();
 
     static PokeTaskSmokeTest()
@@ -106,6 +109,14 @@ public static class PokeTaskSmokeTest
             _frogStart = frog.transform.position;
             _startY = _frogStart.y;
             _boneStart = bone != null ? bone.localRotation : Quaternion.identity;
+
+            // Without a screen the renderer is never "visible", so Deform would skip the update. Force it for this check.
+            var deformable = animated.GetComponentInChildren<Deform.Deformable>();
+            if (deformable != null)
+            {
+                deformable.CullingMode = Deform.CullingMode.AlwaysUpdate;
+            }
+
             Debug.Log($"[SmokeTest] starting a practice run. Animator controller: " +
                       $"{(animator != null && animator.runtimeAnimatorController != null ? animator.runtimeAnimatorController.name : "NONE")}");
             manager.StartTask(true);
@@ -125,15 +136,71 @@ public static class PokeTaskSmokeTest
                 _maxBoneAngle = Mathf.Max(_maxBoneAngle, Quaternion.Angle(_boneStart, bone.localRotation));
             }
 
+            SampleDeformation(animated, t);
+
             bool trialDone = manager.TrialNumber >= 1 && manager.State == PokeTaskManager.TaskState.Interval;
             if (trialDone || t > Timeout)
             {
                 manager.StopTask();
-                bool ok = trialDone && _sawHop && _maxTravel > 4f && _maxBoneAngle > 15f && _errors == 0;
+                bool ok = trialDone && _sawHop && _maxTravel > 4f && _maxBoneAngle > 15f && _errors == 0 && _maxDeform < 1f;
                 string reason = $"trialDone={trialDone} sawHop={_sawHop} maxTravel={_maxTravel:F1}cm " +
-                                $"maxBoneAngle={_maxBoneAngle:F0}deg maxLift={_maxLiftAboveStart:F1}cm errors={_errors} " +
+                                $"maxBoneAngle={_maxBoneAngle:F0}deg maxLift={_maxLiftAboveStart:F1}cm " +
+                                $"maxDeformation={_maxDeform:F3}cm errors={_errors} " +
                                 $"result={(manager.LastWasHit ? "hit" : "miss")} t={t:F0}s";
                 Finish(ok, reason);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     How far the deformers (breathing, throat, touch) move a vertex from its original place, in world cm.
+    ///     Must stay well below a centimetre; a unit mix-up would make it hundreds.
+    /// </summary>
+    private static void SampleDeformation(GameObject animated, double t)
+    {
+        if (t < _nextDeformSample)
+        {
+            return;
+        }
+
+        _nextDeformSample = (float)t + 0.25f;
+
+        var smr = animated.GetComponentInChildren<SkinnedMeshRenderer>();
+        if (smr == null || smr.sharedMesh == null)
+        {
+            return;
+        }
+
+        if (_originalVertices == null)
+        {
+            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath("Assets/Models/FrogAnimated/frog_schlegel_hop.fbx"))
+            {
+                if (asset is Mesh mesh && mesh.vertexCount == smr.sharedMesh.vertexCount)
+                {
+                    _originalVertices = mesh.vertices;
+                    break;
+                }
+            }
+        }
+
+        if (_originalVertices == null)
+        {
+            return;
+        }
+
+        Vector3[] current = smr.sharedMesh.vertices;
+        if (current.Length != _originalVertices.Length)
+        {
+            return;
+        }
+
+        float unit = smr.transform.lossyScale.x;
+        for (var i = 0; i < current.Length; i++)
+        {
+            float moved = (current[i] - _originalVertices[i]).magnitude * unit;
+            if (moved > _maxDeform)
+            {
+                _maxDeform = moved;
             }
         }
     }

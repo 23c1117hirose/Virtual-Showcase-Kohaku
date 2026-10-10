@@ -192,6 +192,9 @@ public static class FrogModelSwap
         oldBelly.enabled = false;
         oldThroat.enabled = false;
 
+        // 7. Exact placement on the ground, and the belly / throat axes and radii fitted to the new body.
+        FrogDeformerFit.Fit();
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();

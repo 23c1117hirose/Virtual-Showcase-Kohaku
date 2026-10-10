@@ -871,6 +871,23 @@ namespace VirtualShowcase.Showcase
                     continue;
                 }
 
+                // A skinned mesh's renderer bounds are a generous box (they allow for the whole animation), which
+                // would leave the frog floating above the ground. Its vertices in the sitting pose are exact.
+                if (frogRenderer is SkinnedMeshRenderer skinned && skinned.sharedMesh != null && skinned.sharedMesh.isReadable)
+                {
+                    foreach (Vector3 vertex in skinned.sharedMesh.vertices)
+                    {
+                        float vertexHeight = Vector3.Dot(skinned.transform.TransformPoint(vertex) - origin, up);
+                        if (!found || vertexHeight < lowest)
+                        {
+                            lowest = vertexHeight;
+                            found = true;
+                        }
+                    }
+
+                    continue;
+                }
+
                 Bounds bounds = frogRenderer.bounds;
                 for (var i = 0; i < 8; i++)
                 {
