@@ -24,6 +24,7 @@ public static class FrogDeformerFit
     private static readonly Vector3 OriginalThroatPosition = new Vector3(0f, -0.03f, -2.87f);
     private const float OriginalBellyRadius = 2.8f;
     private const float OriginalThroatRadius = 4.5f;
+    private const float TouchRadius = 2.0f;
 
     [MenuItem("Tools/Poke Task/Fit Deformers To Animated Frog")]
     public static void RunFromMenu()
@@ -127,6 +128,20 @@ public static class FrogDeformerFit
             {
                 deformer.Radius = throatRadius;
                 EditorUtility.SetDirty(deformer);
+            }
+        }
+
+        // The dent of a touch: a wider area than before (1.5), so that it can be seen on the small frog during the task.
+        foreach (TouchPushDeformer touchDeformer in new[]
+                 {
+                     smr.GetComponent<TouchPushDeformer>(),
+                     oldFilter.GetComponent<TouchPushDeformer>()
+                 })
+        {
+            if (touchDeformer != null)
+            {
+                touchDeformer.Radius = TouchRadius;
+                EditorUtility.SetDirty(touchDeformer);
             }
         }
 

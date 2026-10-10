@@ -844,9 +844,11 @@ namespace VirtualShowcase.Showcase
 
                 for (var i = 0; i < _frogRenderers.Length; i++)
                 {
-                    if (_frogRenderers[i] != null)
+                    // Only the renderers this task switched off are switched on again. The ones that were not shown
+                    // from the start (the frog model that is not chosen) are left exactly as they were.
+                    if (_frogRenderers[i] != null && _frogRendererStates[i])
                     {
-                        _frogRenderers[i].enabled = _frogRendererStates[i];
+                        _frogRenderers[i].enabled = true;
                     }
                 }
 
@@ -931,9 +933,10 @@ namespace VirtualShowcase.Showcase
         {
             for (var i = 0; i < _frogRenderers.Length; i++)
             {
-                if (_frogRenderers[i] != null)
+                // Renderers that were not shown at the start (the frog model that is not chosen) are never touched.
+                if (_frogRenderers[i] != null && _frogRendererStates[i])
                 {
-                    _frogRenderers[i].enabled = visible && _frogRendererStates[i];
+                    _frogRenderers[i].enabled = visible;
                 }
             }
         }

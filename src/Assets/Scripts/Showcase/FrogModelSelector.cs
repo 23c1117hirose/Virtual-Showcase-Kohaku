@@ -60,7 +60,7 @@ namespace VirtualShowcase.Showcase
             public TouchPushDeformer Touch;
             public RadialPushDeformer Belly;
             public RadialPushDeformer Throat;
-            public MeshRenderer MeshRenderer;
+            public Renderer MainRenderer; // MeshRenderer (static frog) or SkinnedMeshRenderer (rigged frog)
             public Collider Collider;
         }
 
@@ -164,7 +164,7 @@ namespace VirtualShowcase.Showcase
             {
                 Deformable = deformable,
                 Touch = meshObject.GetComponent<TouchPushDeformer>(),
-                MeshRenderer = meshObject.GetComponent<MeshRenderer>(),
+                MainRenderer = meshObject.GetComponent<Renderer>(),
                 Collider = meshObject.GetComponent<MeshCollider>()
             };
 
@@ -243,9 +243,10 @@ namespace VirtualShowcase.Showcase
             set.Belly.Factor = 0f;
             set.Throat.Factor = 0f;
 
-            if (set.MeshRenderer != null)
+            // Also switches the renderer ON again when this frog is chosen, whatever happened to it before.
+            if (set.MainRenderer != null)
             {
-                set.MeshRenderer.enabled = active;
+                set.MainRenderer.enabled = active;
             }
 
             if (set.Collider != null)
