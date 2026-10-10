@@ -1067,7 +1067,11 @@ MonoBehaviour:
   frogScale: 0.5
   hopSeconds: 0.4
   hopHeight: 3
-  turnSeconds: 0.15
+  turnHopSpeed: 2.2
+  turnHopArcHeight: 1.5
+  turnCrouchSeconds: 0.1
+  turnFlightSeconds: 0.3
+  turnSettleSeconds: 0.12
   crouchSeconds: 0.15
   fleeCrouchSeconds: 0.1
   settleSeconds: 0.25
@@ -6980,6 +6984,7 @@ GameObject:
   - component: {fileID: 1794351238}
   - component: {fileID: 1794351239}
   - component: {fileID: 1794351240}
+  - component: {fileID: 1794351241}
   m_Layer: 0
   m_Name: FrogModel
   m_TagString: Untagged
@@ -7081,6 +7086,22 @@ MonoBehaviour:
   targetObject: {fileID: 1794351237}
   originalScale: {x: 1, y: 1, z: 1}
   compensationStrength: 1
+--- !u!114 &1794351241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794351235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3414f000ad82aed47b37995876951c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultChoice: 0
+  toggleKey: 289
+  staticModelName: Frog_lowpoly200
+  animatedModelName: FrogAnimated
 --- !u!1001 &1811902503
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -119,9 +119,26 @@ namespace VirtualShowcase.Showcase
         [SerializeField]
         private float hopHeight = 3f;
 
-        [Tooltip("Time the frog takes to turn around before it flees.")]
+        [Header("Turning around before the escape hop")]
+        [Tooltip("Playback speed of the TurnHop clip (a small hop in place with the frog's own legs; the clip takes 1.8 s at speed 1).")]
         [SerializeField]
-        private float turnSeconds = 0.15f;
+        private float turnHopSpeed = 2.2f;
+
+        [Tooltip("Code-driven turn (static frog): height of the small hop (cm).")]
+        [SerializeField]
+        private float turnHopArcHeight = 1.5f;
+
+        [Tooltip("Code-driven turn (static frog): crouch time before the small hop.")]
+        [SerializeField]
+        private float turnCrouchSeconds = 0.1f;
+
+        [Tooltip("Code-driven turn (static frog): flight time of the small hop, during which the frog turns by 180 degrees.")]
+        [SerializeField]
+        private float turnFlightSeconds = 0.3f;
+
+        [Tooltip("Code-driven turn (static frog): time for the landing to settle.")]
+        [SerializeField]
+        private float turnSettleSeconds = 0.12f;
 
         [Header("Hop motion (squash and stretch)")]
         [Tooltip("The frog crouches this long before it jumps out (anticipation).")]
@@ -248,6 +265,7 @@ namespace VirtualShowcase.Showcase
         private AudioClip _generatedThump;
         private Animator _animator;
         private bool _animated;
+        private bool _hasTurnHop;
 
         public bool IsRunning => _taskRoutine != null;
 
@@ -535,7 +553,7 @@ namespace VirtualShowcase.Showcase
 
             State = TaskState.Fleeing;
             SetFrogTouchable(false);
-            yield return TurnFrog(patch, 1f, turnSeconds);
+            yield return TurnHop(patch);
             yield return HopSequence(patch, 1f, 0f, 180f, fleeCrouchSeconds, false);
             SetFrogVisible(false);
 
@@ -763,7 +781,8 @@ namespace VirtualShowcase.Showcase
                 _frogRendererStates = new bool[_frogRenderers.Length];
                 for (var i = 0; i < _frogRenderers.Length; i++)
                 {
-                    _frogRendererStates[i] = _frogRenderers[i].enabled;
+                    // A renderer that is off, or on an inactive object (the frog model that is not chosen), is left alone.
+                    _frogRendererStates[i] = _frogRenderers[i].enabled && _frogRenderers[i].gameObject.activeInHierarchy;
                 }
 
                 // Measured before anything is moved: how far the lowest point of the frog is below its root,
@@ -781,8 +800,11 @@ namespace VirtualShowcase.Showcase
                 _stateSaved = true;
             }
 
-            _animator = frogAnimator != null ? frogAnimator : _frogRoot.GetComponentInChildren<Animator>(true);
+            _animator = frogAnimator != null && frogAnimator.gameObject.activeInHierarchy
+                ? frogAnimator
+                : _frogRoot.GetComponentInChildren<Animator>(false);
             _animated = useAnimation && _animator != null && _animator.runtimeAnimatorController != null;
+            _hasTurnHop = _animated && _animator.HasState(0, Animator.StringToHash("TurnHop"));
             if (_animated)
             {
                 _animator.applyRootMotion = false;
@@ -932,7 +954,7 @@ namespace VirtualShowcase.Showcase
         /// change the other way, so the volume stays about the same.</param>
         /// <param name="pitchDegrees">Nose-up tilt (negative = nose-down) around the axis across the hop.</param>
         private void ApplyFrogPose(GrassPatch patch, float along, float yawDegrees, float squashY = 1f, float pitchDegrees = 0f,
-            float arcHeight = -1f)
+            float arcHeight = -1f, float lift = 0f)
         {
             Vector3 up = patch.Up;
             Vector3 ground = Vector3.Lerp(patch.HomePoint, patch.LandingPoint, along);
@@ -942,7 +964,7 @@ namespace VirtualShowcase.Showcase
             Vector3 scale = new Vector3(_taskScale.x * widthFactor, _taskScale.y * squashY, _taskScale.z * widthFactor);
 
             // The feet stay on the ground while the body is squashed or stretched.
-            Vector3 position = ground + up * (_footLocal * scale.y + arc);
+            Vector3 position = ground + up * (_footLocal * scale.y + arc + lift);
             Quaternion rotation = Quaternion.AngleAxis(yawDegrees, up) * patch.FrogRotation;
 
             if (!Mathf.Approximately(pitchDegrees, 0f))
@@ -1072,7 +1094,7 @@ namespace VirtualShowcase.Showcase
             _animator.Play("Idle", 0, 0f);
         }
 
-        private void PlayLandingSound()
+        private void PlayLandingSound(float volumeScale = 1f)
         {
             if (!playLandingSound)
             {
@@ -1089,7 +1111,7 @@ namespace VirtualShowcase.Showcase
             }
 
             AudioClip clip = landingClip != null ? landingClip : GetThumpClip();
-            source.PlayOneShot(clip, landingVolume);
+            source.PlayOneShot(clip, landingVolume * volumeScale);
         }
 
         /// <summary>A soft low "thump": a short decaying tone that drops in pitch, plus a tiny burst of noise.</summary>
@@ -1119,17 +1141,87 @@ namespace VirtualShowcase.Showcase
             return _generatedThump;
         }
 
-        private IEnumerator TurnFrog(GrassPatch patch, float along, float seconds)
+        /// <summary>
+        ///     The frog turns around on the spot with a small hop before it escapes: with its own legs (the TurnHop clip,
+        ///     a smaller copy of the leap, while the body turns by 180 degrees in the air), or, for the static frog,
+        ///     with a small squash-and-stretch hop done in code.
+        /// </summary>
+        private IEnumerator TurnHop(GrassPatch patch)
         {
-            var elapsed = 0f;
-            while (elapsed < seconds)
+            if (_animated && _hasTurnHop)
             {
-                ApplyFrogPose(patch, along, Mathf.Lerp(0f, 180f, elapsed / seconds));
-                elapsed += Time.deltaTime;
+                float speed = Mathf.Max(0.1f, turnHopSpeed);
+                _animator.speed = speed;
+                _animator.Play("TurnHop", 0, 0f);
+
+                // Rest and crouch.
+                float wait = clipTakeoffSeconds / speed;
+                var elapsed = 0f;
+                while (elapsed < wait)
+                {
+                    ApplyFrogPose(patch, 1f, 0f);
+                    elapsed += Time.deltaTime;
+                    yield return null;
+                }
+
+                // In the air: turn around.
+                float flight = Mathf.Max(0.05f, (clipLandingSeconds - clipTakeoffSeconds) / speed);
+                elapsed = 0f;
+                while (elapsed < flight)
+                {
+                    ApplyFrogPose(patch, 1f, 180f * Mathf.SmoothStep(0f, 1f, elapsed / flight));
+                    elapsed += Time.deltaTime;
+                    yield return null;
+                }
+
+                ApplyFrogPose(patch, 1f, 180f);
+                PlayLandingSound(0.5f);
+
+                // Half of the recovery; the escape hop follows right away with its own clip.
+                float recover = Mathf.Max(0f, (clipLengthSeconds - clipLandingSeconds) / speed) * 0.5f;
+                elapsed = 0f;
+                while (elapsed < recover)
+                {
+                    elapsed += Time.deltaTime;
+                    yield return null;
+                }
+
+                _animator.speed = 1f;
+                yield break;
+            }
+
+            // Code-driven: crouch, small hop with the turn, small squash on landing.
+            var t = 0f;
+            while (t < turnCrouchSeconds)
+            {
+                float k = Mathf.SmoothStep(0f, 1f, t / turnCrouchSeconds);
+                ApplyFrogPose(patch, 1f, 0f, Mathf.Lerp(1f, crouchHeight, k));
+                t += Time.deltaTime;
                 yield return null;
             }
 
-            ApplyFrogPose(patch, along, 180f);
+            t = 0f;
+            while (t < turnFlightSeconds)
+            {
+                float s = t / turnFlightSeconds;
+                float height = Mathf.Lerp(stretchHeight, 1f, Mathf.SmoothStep(0f, 1f, s));
+                float lift = turnHopArcHeight * 4f * s * (1f - s);
+                ApplyFrogPose(patch, 1f, 180f * Mathf.SmoothStep(0f, 1f, s), height, 0f, -1f, lift);
+                t += Time.deltaTime;
+                yield return null;
+            }
+
+            PlayLandingSound(0.5f);
+            t = 0f;
+            while (t < turnSettleSeconds)
+            {
+                float height = 1f - (1f - landSquashHeight) * 0.5f * Mathf.Exp(-9f * t) * Mathf.Cos(2f * Mathf.PI * 2.2f * t);
+                ApplyFrogPose(patch, 1f, 180f, height);
+                t += Time.deltaTime;
+                yield return null;
+            }
+
+            ApplyFrogPose(patch, 1f, 180f);
         }
 
         #endregion

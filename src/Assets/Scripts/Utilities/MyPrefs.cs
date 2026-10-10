@@ -448,6 +448,15 @@ namespace VirtualShowcase.Utilities
             set => PlayerPrefs.SetFloat("leapScale", value);
         }
 
+        /// <summary>
+        ///     Which frog model is shown (0 = animated, 1 = static). -1 = never chosen, the scene's default applies.
+        /// </summary>
+        public static int FrogModelChoice
+        {
+            get => PlayerPrefs.GetInt("frogModelChoice", -1);
+            set => PlayerPrefs.SetInt("frogModelChoice", value);
+        }
+
         #endregion
     }
 }

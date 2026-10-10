@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using VirtualShowcase.Showcase;
 
 /// <summary>
 ///     Swaps the static frog of FrogRoom for the rigged, animated one (Tools → Poke Task → Swap Frog To Animated Model).
@@ -52,6 +53,41 @@ public static class FrogModelSwap
         try
         {
             Run();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("[FrogSwap] FAILED: " + e);
+            EditorApplication.Exit(1);
+            return;
+        }
+
+        EditorApplication.Exit(0);
+    }
+
+    /// <summary>
+    ///     Batch entry after the FBX was replaced by a version with more clips: reconfigures the import, updates the
+    ///     Animator Controller in place, and makes sure the frog model selector is on FrogModel. The swap is not redone.
+    /// </summary>
+    public static void UpdateAnimationsBatch()
+    {
+        try
+        {
+            AssetDatabase.Refresh();
+            ConfigureImporter();
+            CreateController();
+
+            var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+            GameObject frogRoot = GameObject.Find(FrogRootName);
+            Require(frogRoot != null, $"'{FrogRootName}' not found in the scene");
+            if (frogRoot.GetComponent<FrogModelSelector>() == null)
+            {
+                frogRoot.AddComponent<FrogModelSelector>();
+            }
+
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[FrogSwap] animations updated, frog model selector present.");
         }
         catch (System.Exception e)
         {
@@ -195,6 +231,12 @@ public static class FrogModelSwap
         // 7. Exact placement on the ground, and the belly / throat axes and radii fitted to the new body.
         FrogDeformerFit.Fit();
 
+        // 8. The switch between the two frogs (F8).
+        if (frogRoot.GetComponent<FrogModelSelector>() == null)
+        {
+            frogRoot.AddComponent<FrogModelSelector>();
+        }
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
@@ -227,7 +269,12 @@ public static class FrogModelSwap
         foreach (ModelImporterClipAnimation clip in clips)
         {
             Debug.Log($"[FrogSwap] FBX take: '{clip.name}' frames {clip.firstFrame}-{clip.lastFrame}");
-            if (clip.name.Contains("Hop"))
+            if (clip.name.Contains("TurnHop"))
+            {
+                clip.name = "TurnHop";
+                clip.loopTime = false;
+            }
+            else if (clip.name.Contains("Hop"))
             {
                 clip.name = "Hop";
                 clip.loopTime = false;
@@ -304,8 +351,7 @@ public static class FrogModelSwap
 
     private static AnimatorController CreateController()
     {
-        AnimationClip idle = null;
-        AnimationClip hop = null;
+        var clips = new Dictionary<string, AnimationClip>();
         foreach (AnimationClip clip in AssetDatabase.LoadAllAssetsAtPath(FbxPath).OfType<AnimationClip>())
         {
             if (clip.name.StartsWith("__preview__"))
@@ -314,45 +360,73 @@ public static class FrogModelSwap
             }
 
             Debug.Log($"[FrogSwap] clip '{clip.name}' length={clip.length:F3}s loop={clip.isLooping}");
-            if (clip.name == "Idle")
-            {
-                idle = clip;
-            }
-            else if (clip.name == "Hop")
-            {
-                hop = clip;
-            }
+            clips[clip.name] = clip;
         }
 
-        Require(idle != null && hop != null, "FBX does not contain both an Idle and a Hop clip");
+        Require(clips.ContainsKey("Idle") && clips.ContainsKey("Hop"), "FBX does not contain both an Idle and a Hop clip");
 
-        if (AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath) != null)
+        // The same controller asset is kept when it exists, because the scene's Animator points at it.
+        var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+        if (controller == null)
         {
-            AssetDatabase.DeleteAsset(ControllerPath);
+            controller = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
         }
 
-        var controller = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
-        controller.AddParameter("Hop", AnimatorControllerParameterType.Trigger);
-        AnimatorStateMachine machine = controller.layers[0].stateMachine;
+        if (controller.parameters.All(parameter => parameter.name != "Hop"))
+        {
+            controller.AddParameter("Hop", AnimatorControllerParameterType.Trigger);
+        }
 
-        AnimatorState idleState = machine.AddState("Idle");
-        idleState.motion = idle;
-        AnimatorState hopState = machine.AddState("Hop");
-        hopState.motion = hop;
+        AnimatorStateMachine machine = controller.layers[0].stateMachine;
+        AnimatorState idleState = EnsureState(machine, "Idle", clips["Idle"]);
         machine.defaultState = idleState;
 
-        AnimatorStateTransition toHop = idleState.AddTransition(hopState);
-        toHop.AddCondition(AnimatorConditionMode.If, 0f, "Hop");
-        toHop.hasExitTime = false;
-        toHop.duration = 0f;
+        AnimatorState hopState = EnsureState(machine, "Hop", clips["Hop"]);
+        if (idleState.transitions.Length == 0)
+        {
+            AnimatorStateTransition toHop = idleState.AddTransition(hopState);
+            toHop.AddCondition(AnimatorConditionMode.If, 0f, "Hop");
+            toHop.hasExitTime = false;
+            toHop.duration = 0f;
+        }
 
-        AnimatorStateTransition toIdle = hopState.AddTransition(idleState);
-        toIdle.hasExitTime = true;
-        toIdle.exitTime = 1f;
-        toIdle.duration = 0.05f;
+        if (hopState.transitions.Length == 0)
+        {
+            AddReturnToIdle(hopState, idleState);
+        }
+
+        // A smaller hop used to turn around on the spot (played by code with Animator.Play).
+        if (clips.TryGetValue("TurnHop", out AnimationClip turnClip))
+        {
+            AnimatorState turnState = EnsureState(machine, "TurnHop", turnClip);
+            if (turnState.transitions.Length == 0)
+            {
+                AddReturnToIdle(turnState, idleState);
+            }
+        }
 
         EditorUtility.SetDirty(controller);
         return controller;
+    }
+
+    private static AnimatorState EnsureState(AnimatorStateMachine machine, string stateName, AnimationClip clip)
+    {
+        AnimatorState state = machine.states.Select(child => child.state).FirstOrDefault(candidate => candidate.name == stateName);
+        if (state == null)
+        {
+            state = machine.AddState(stateName);
+        }
+
+        state.motion = clip;
+        return state;
+    }
+
+    private static void AddReturnToIdle(AnimatorState from, AnimatorState idle)
+    {
+        AnimatorStateTransition back = from.AddTransition(idle);
+        back.hasExitTime = true;
+        back.exitTime = 1f;
+        back.duration = 0.05f;
     }
 
     #endregion

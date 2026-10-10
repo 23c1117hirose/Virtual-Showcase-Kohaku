@@ -3,7 +3,7 @@ import shutil
 import sys
 
 import bpy
-from mathutils import Matrix
+from mathutils import Matrix, Quaternion, Vector
 
 argv = sys.argv[sys.argv.index("--") + 1:]
 gltf_path, out_dir = argv[0], argv[1]
@@ -91,9 +91,39 @@ for act in list(bpy.data.actions):
 
 idle = make_action("Idle", [None, None])
 hop = make_action("Hop", hop_mats)
+
+
+def blended_action(name, source, factor):
+    """A smaller version of an action: every bone's offset from the sitting (rest) pose is scaled by `factor`."""
+    arm.animation_data.action = source
+    samples = []
+    for i in range(len(HOP_SRC)):
+        scene.frame_set(1 + i)
+        bpy.context.view_layer.update()
+        samples.append({pb.name: (pb.location.copy(), pb.rotation_quaternion.copy(), pb.scale.copy()) for pb in arm.pose.bones})
+
+    act = bpy.data.actions.new(name)
+    act.use_fake_user = True
+    arm.animation_data.action = act
+    identity = Quaternion((1.0, 0.0, 0.0, 0.0))
+    for i, snap in enumerate(samples):
+        frame = 1 + i
+        for pb in arm.pose.bones:
+            loc, rot, scl = snap[pb.name]
+            pb.location = loc * factor
+            pb.rotation_quaternion = identity.slerp(rot, factor)
+            pb.scale = Vector((1.0, 1.0, 1.0)) + (scl - Vector((1.0, 1.0, 1.0))) * factor
+            pb.keyframe_insert("location", frame=frame)
+            pb.keyframe_insert("rotation_quaternion", frame=frame)
+            pb.keyframe_insert("scale", frame=frame)
+    return act
+
+
+# A small hop for turning around on the spot (about 45 % of the full leap).
+turn_hop = blended_action("TurnHop", hop, 0.45)
 arm.animation_data.action = hop
 scene.frame_start, scene.frame_end = 1, len(HOP_SRC)
-print("Hop frames:", len(HOP_SRC), "(%.3fs)" % ((len(HOP_SRC) - 1) / scene.render.fps), "| Idle: 2 frames")
+print("Hop frames:", len(HOP_SRC), "(%.3fs)" % ((len(HOP_SRC) - 1) / scene.render.fps), "| Idle: 2 frames | TurnHop: same length")
 
 # textures + license
 tex_dir = os.path.join(out_dir, "textures")

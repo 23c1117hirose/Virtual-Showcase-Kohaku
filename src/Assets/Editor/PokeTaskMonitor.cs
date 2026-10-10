@@ -11,6 +11,7 @@ using VirtualShowcase.Showcase;
 public class PokeTaskMonitor : EditorWindow
 {
     private PokeTaskManager _manager;
+    private FrogModelSelector _selector;
     private GUIStyle _bigStyle;
 
     [MenuItem("Tools/Poke Task/Monitor")]
@@ -49,6 +50,8 @@ public class PokeTaskMonitor : EditorWindow
 
         DrawSession();
         EditorGUILayout.Space();
+        DrawModelChoice();
+        EditorGUILayout.Space();
         DrawProgress();
         EditorGUILayout.Space();
         DrawResults();
@@ -62,6 +65,40 @@ public class PokeTaskMonitor : EditorWindow
         EditorGUILayout.LabelField("条件", _manager.ConditionLabel);
         EditorGUILayout.LabelField("出現順 (Sequence)", _manager.SequenceId.ToString());
         EditorGUILayout.LabelField("設定の変更", "PokeTask の Inspector（再生前）");
+    }
+
+    /// <summary>Which frog is shown: the rigged one or the earlier static one (the F8 key does the same).</summary>
+    private void DrawModelChoice()
+    {
+        if (_selector == null)
+        {
+            _selector = FindObjectOfType<FrogModelSelector>();
+        }
+
+        if (_selector == null)
+        {
+            EditorGUILayout.HelpBox("FrogModelSelector がありません（FrogModel に付けると切り替えできます）。", MessageType.None);
+            return;
+        }
+
+        using (new EditorGUI.DisabledScope(!Application.isPlaying || _manager.IsRunning))
+        {
+            FrogModelChoice current = Application.isPlaying ? _selector.Current : FrogModelChoice.Animated;
+            var chosen = (FrogModelChoice)EditorGUILayout.EnumPopup("カエルのモデル (F8)", current);
+            if (chosen != current)
+            {
+                _selector.Select(chosen);
+            }
+        }
+
+        if (!Application.isPlaying)
+        {
+            EditorGUILayout.LabelField("切り替えはPlay中に行います（選択は保存されます）");
+        }
+        else if (_manager.IsRunning)
+        {
+            EditorGUILayout.LabelField("タスク中は切り替えられません");
+        }
     }
 
     private void DrawProgress()

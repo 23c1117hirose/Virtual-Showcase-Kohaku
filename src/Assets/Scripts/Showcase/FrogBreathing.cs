@@ -37,6 +37,17 @@ namespace VirtualShowcase.Showcase
 
         private float _cycleTime;
 
+        /// <summary>Points the breathing at another deformer (used when the frog model is switched).</summary>
+        public void SetDeformer(RadialPushDeformer deformer)
+        {
+            if (bellyPush != null && bellyPush != deformer)
+            {
+                bellyPush.Factor = 0f;
+            }
+
+            bellyPush = deformer;
+        }
+
         #region Event Functions
 
         private void Update()

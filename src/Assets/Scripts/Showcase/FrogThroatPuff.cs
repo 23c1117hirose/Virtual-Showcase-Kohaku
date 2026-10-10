@@ -42,6 +42,17 @@ namespace VirtualShowcase.Showcase
 
         private Coroutine _puffRoutine;
 
+        /// <summary>Points the throat puff at another deformer (used when the frog model is switched).</summary>
+        public void SetDeformer(RadialPushDeformer deformer)
+        {
+            if (throatPush != null && throatPush != deformer)
+            {
+                throatPush.Factor = 0f;
+            }
+
+            throatPush = deformer;
+        }
+
         #region Event Functions
 
         private void OnEnable()
