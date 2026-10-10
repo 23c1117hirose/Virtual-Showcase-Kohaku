@@ -111,7 +111,7 @@ namespace VirtualShowcase.Showcase
         [SerializeField]
         private float frogScale = 0.5f;
 
-        [Tooltip("Duration of one hop (out of the grass, and back into it).")]
+        [Tooltip("Flight time of one hop (out of the grass, and back into it).")]
         [SerializeField]
         private float hopSeconds = 0.4f;
 
@@ -122,6 +122,54 @@ namespace VirtualShowcase.Showcase
         [Tooltip("Time the frog takes to turn around before it flees.")]
         [SerializeField]
         private float turnSeconds = 0.15f;
+
+        [Header("Hop motion (squash and stretch)")]
+        [Tooltip("The frog crouches this long before it jumps out (anticipation).")]
+        [SerializeField]
+        private float crouchSeconds = 0.15f;
+
+        [Tooltip("Crouch before the escape hop (shorter, the frog is already on its way).")]
+        [SerializeField]
+        private float fleeCrouchSeconds = 0.1f;
+
+        [Tooltip("Time the landing takes to settle (squash and bounce). The frog can be poked after this.")]
+        [SerializeField]
+        private float settleSeconds = 0.25f;
+
+        [Tooltip("Body height while crouching (1 = normal, 0.78 = squashed to 78 %).")]
+        [Range(0.5f, 1f)]
+        [SerializeField]
+        private float crouchHeight = 0.78f;
+
+        [Tooltip("Body height at take-off (stretched, above 1).")]
+        [Range(1f, 1.4f)]
+        [SerializeField]
+        private float stretchHeight = 1.15f;
+
+        [Tooltip("Body height at the moment of landing (squashed).")]
+        [Range(0.5f, 1f)]
+        [SerializeField]
+        private float landSquashHeight = 0.72f;
+
+        [Tooltip("Nose-up tilt at take-off that turns into nose-down at landing, following the flight path (degrees).")]
+        [SerializeField]
+        private float flightPitchDegrees = 22f;
+
+        [Tooltip("Nose-up tilt while crouching (degrees).")]
+        [SerializeField]
+        private float crouchPitchDegrees = 8f;
+
+        [Header("Landing sound")]
+        [SerializeField]
+        private bool playLandingSound = true;
+
+        [Tooltip("Leave empty to use a small generated thump.")]
+        [SerializeField]
+        private AudioClip landingClip;
+
+        [Range(0f, 1f)]
+        [SerializeField]
+        private float landingVolume = 0.5f;
 
         [Header("Cue sound")]
         [Tooltip("Leave empty to reuse the FrogVocalizer's croak clips.")]
@@ -167,6 +215,7 @@ namespace VirtualShowcase.Showcase
 
         private float _reactionSum;
         private int _reactionCount;
+        private AudioClip _generatedThump;
 
         public bool IsRunning => _taskRoutine != null;
 
@@ -403,9 +452,9 @@ namespace VirtualShowcase.Showcase
             ApplyFrogPose(patch, 0f, 0f);
             SetFrogVisible(true);
             float appearTime = Time.realtimeSinceStartup;
-            yield return HopFrog(patch, 0f, 1f, 0f, hopSeconds);
+            yield return HopSequence(patch, 0f, 1f, 0f, crouchSeconds, true);
 
-            // 3. Landed: from now on it can be poked.
+            // 3. Landed and settled: from now on it can be poked (reaction times start here).
             float landingTime = Time.realtimeSinceStartup;
             State = TaskState.Waiting;
             _awaitingTouch = true;
@@ -455,7 +504,7 @@ namespace VirtualShowcase.Showcase
             State = TaskState.Fleeing;
             SetFrogTouchable(false);
             yield return TurnFrog(patch, 1f, turnSeconds);
-            yield return HopFrog(patch, 1f, 0f, 180f, hopSeconds);
+            yield return HopSequence(patch, 1f, 0f, 180f, fleeCrouchSeconds, false);
             SetFrogVisible(false);
 
             LastWasHit = record.Hit;
@@ -819,31 +868,137 @@ namespace VirtualShowcase.Showcase
 
         /// <param name="along">0 = inside the clump, 1 = on the landing spot.</param>
         /// <param name="yawDegrees">Extra turn around the ground's up axis (180 = facing back into the grass).</param>
-        private void ApplyFrogPose(GrassPatch patch, float along, float yawDegrees)
+        /// <param name="squashY">Body height factor along the frog's own up axis (1 = normal). Width and depth
+        /// change the other way, so the volume stays about the same.</param>
+        /// <param name="pitchDegrees">Nose-up tilt (negative = nose-down) around the axis across the hop.</param>
+        private void ApplyFrogPose(GrassPatch patch, float along, float yawDegrees, float squashY = 1f, float pitchDegrees = 0f)
         {
             Vector3 up = patch.Up;
-            float eased = Mathf.SmoothStep(0f, 1f, along);
-            Vector3 ground = Vector3.Lerp(patch.HomePoint, patch.LandingPoint, eased);
+            Vector3 ground = Vector3.Lerp(patch.HomePoint, patch.LandingPoint, along);
             float arc = hopHeight * 4f * along * (1f - along);
 
-            Vector3 position = ground + up * (_footLocal * _taskScale.y + arc);
+            float widthFactor = 1f / Mathf.Sqrt(squashY);
+            Vector3 scale = new Vector3(_taskScale.x * widthFactor, _taskScale.y * squashY, _taskScale.z * widthFactor);
+
+            // The feet stay on the ground while the body is squashed or stretched.
+            Vector3 position = ground + up * (_footLocal * scale.y + arc);
             Quaternion rotation = Quaternion.AngleAxis(yawDegrees, up) * patch.FrogRotation;
 
+            if (!Mathf.Approximately(pitchDegrees, 0f))
+            {
+                // The frog's model looks along -Z (see GrassPatch.FrogRotation).
+                Vector3 head = rotation * Vector3.back;
+                Vector3 across = Vector3.Cross(up, head).normalized;
+                rotation = Quaternion.AngleAxis(-pitchDegrees, across) * rotation;
+            }
+
             _frogRoot.SetPositionAndRotation(position, rotation);
-            _frogRoot.localScale = _taskScale;
+            _frogRoot.localScale = scale;
         }
 
-        private IEnumerator HopFrog(GrassPatch patch, float from, float to, float yawDegrees, float seconds)
+        /// <summary>
+        ///     One hop with animation principles instead of just sliding along a curve:
+        ///     crouch (anticipation), take-off stretch, flight along a parabola with the nose following the
+        ///     path, and (if <paramref name="settle" />) a squash on landing that bounces back.
+        /// </summary>
+        private IEnumerator HopSequence(GrassPatch patch, float from, float to, float yawDegrees, float crouchTime, bool settle)
         {
+            // 1. Crouch.
             var elapsed = 0f;
-            while (elapsed < seconds)
+            while (elapsed < crouchTime)
             {
-                ApplyFrogPose(patch, Mathf.Lerp(from, to, elapsed / seconds), yawDegrees);
+                float k = Mathf.SmoothStep(0f, 1f, elapsed / crouchTime);
+                ApplyFrogPose(patch, from, yawDegrees, Mathf.Lerp(1f, crouchHeight, k), crouchPitchDegrees * k);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            // 2. Flight: stretched at take-off, back to normal in the air; the nose rises, then dips.
+            const float launchPortion = 0.15f;
+            elapsed = 0f;
+            while (elapsed < hopSeconds)
+            {
+                float s = elapsed / hopSeconds;
+                float height = s < launchPortion
+                    ? Mathf.Lerp(crouchHeight, stretchHeight, Mathf.SmoothStep(0f, 1f, s / launchPortion))
+                    : Mathf.Lerp(stretchHeight, 1f, Mathf.SmoothStep(0f, 1f, (s - launchPortion) / (1f - launchPortion)));
+                float launchBlend = Mathf.SmoothStep(0f, 1f, s / launchPortion);
+                float pitch = Mathf.Lerp(crouchPitchDegrees, flightPitchDegrees, launchBlend) * (1f - 2f * s);
+
+                ApplyFrogPose(patch, Mathf.Lerp(from, to, s), yawDegrees, height, pitch);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            if (!settle)
+            {
+                ApplyFrogPose(patch, to, yawDegrees);
+                yield break;
+            }
+
+            // 3. Landing: an instant squash that bounces back like a spring, while the nose levels out.
+            PlayLandingSound();
+            elapsed = 0f;
+            while (elapsed < settleSeconds)
+            {
+                float decay = Mathf.Exp(-9f * elapsed);
+                float bounce = Mathf.Cos(2f * Mathf.PI * 2.2f * elapsed);
+                float height = 1f - (1f - landSquashHeight) * decay * bounce;
+                float pitch = -flightPitchDegrees * (1f - Mathf.SmoothStep(0f, 1f, elapsed / settleSeconds));
+
+                ApplyFrogPose(patch, to, yawDegrees, height, pitch);
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
             ApplyFrogPose(patch, to, yawDegrees);
+        }
+
+        private void PlayLandingSound()
+        {
+            if (!playLandingSound)
+            {
+                return;
+            }
+
+            // The frog's own audio source is spatialized and moves with the frog.
+            AudioSource source = vocalizer != null && vocalizer.audioSource != null
+                ? vocalizer.audioSource
+                : frogTouch.audioSource;
+            if (source == null)
+            {
+                return;
+            }
+
+            AudioClip clip = landingClip != null ? landingClip : GetThumpClip();
+            source.PlayOneShot(clip, landingVolume);
+        }
+
+        /// <summary>A soft low "thump": a short decaying tone that drops in pitch, plus a tiny burst of noise.</summary>
+        private AudioClip GetThumpClip()
+        {
+            if (_generatedThump != null)
+            {
+                return _generatedThump;
+            }
+
+            const int sampleRate = 44100;
+            const float duration = 0.18f;
+            int count = Mathf.RoundToInt(sampleRate * duration);
+            var data = new float[count];
+            var rng = new System.Random(3);
+
+            for (var i = 0; i < count; i++)
+            {
+                float t = (float)i / sampleRate;
+                float tone = Mathf.Sin(2f * Mathf.PI * 85f * t * (1f + 0.6f * Mathf.Exp(-t * 20f))) * Mathf.Exp(-t * 28f);
+                float noise = ((float)rng.NextDouble() * 2f - 1f) * Mathf.Exp(-t * 60f);
+                data[i] = tone * 0.8f + noise * 0.15f;
+            }
+
+            _generatedThump = AudioClip.Create("FrogLandingThump", count, 1, sampleRate, false);
+            _generatedThump.SetData(data, 0);
+            return _generatedThump;
         }
 
         private IEnumerator TurnFrog(GrassPatch patch, float along, float seconds)
