@@ -171,6 +171,36 @@ namespace VirtualShowcase.Showcase
         [SerializeField]
         private float landingVolume = 0.5f;
 
+        [Header("Hop animation (rigged frog)")]
+        [Tooltip("Play the frog's own jump animation (an Animator with the states Idle and Hop). " +
+                 "Without an Animator the code-driven squash and stretch above is used instead.")]
+        [SerializeField]
+        private bool useAnimation = true;
+
+        [Tooltip("Found automatically under the frog if left empty.")]
+        [SerializeField]
+        private Animator frogAnimator;
+
+        [Tooltip("Playback speed of the Hop clip. The clip takes 1.8 s at speed 1, so 1.8 makes it last about one second.")]
+        [SerializeField]
+        private float animationSpeed = 1.8f;
+
+        [Tooltip("When in the Hop clip the feet leave the ground (seconds at speed 1).")]
+        [SerializeField]
+        private float clipTakeoffSeconds = 0.625f;
+
+        [Tooltip("When in the Hop clip the feet touch down again (seconds at speed 1).")]
+        [SerializeField]
+        private float clipLandingSeconds = 1.375f;
+
+        [Tooltip("Length of the Hop clip (seconds at speed 1).")]
+        [SerializeField]
+        private float clipLengthSeconds = 1.792f;
+
+        [Tooltip("Height of the code-driven arc while the animation already lifts the body by itself (cm).")]
+        [SerializeField]
+        private float animatedArcHeight = 0.5f;
+
         [Header("Cue sound")]
         [Tooltip("Leave empty to reuse the FrogVocalizer's croak clips.")]
         [SerializeField]
@@ -216,6 +246,8 @@ namespace VirtualShowcase.Showcase
         private float _reactionSum;
         private int _reactionCount;
         private AudioClip _generatedThump;
+        private Animator _animator;
+        private bool _animated;
 
         public bool IsRunning => _taskRoutine != null;
 
@@ -749,6 +781,16 @@ namespace VirtualShowcase.Showcase
                 _stateSaved = true;
             }
 
+            _animator = frogAnimator != null ? frogAnimator : _frogRoot.GetComponentInChildren<Animator>(true);
+            _animated = useAnimation && _animator != null && _animator.runtimeAnimatorController != null;
+            if (_animated)
+            {
+                _animator.applyRootMotion = false;
+                _animator.Play("Idle", 0, 0f);
+            }
+
+            Debug.Log($"[PokeTask] Hop motion: {(_animated ? "frog animation (Hop clip)" : "code-driven squash and stretch")}");
+
             _taskScale = _frogBaseScale * frogScale;
 
             if (vocalizer != null)
@@ -821,9 +863,10 @@ namespace VirtualShowcase.Showcase
             var lowest = 0f;
             var found = false;
 
-            foreach (Renderer frogRenderer in _frogRenderers)
+            for (var r = 0; r < _frogRenderers.Length; r++)
             {
-                if (frogRenderer == null)
+                Renderer frogRenderer = _frogRenderers[r];
+                if (frogRenderer == null || !_frogRendererStates[r])
                 {
                     continue;
                 }
@@ -871,11 +914,12 @@ namespace VirtualShowcase.Showcase
         /// <param name="squashY">Body height factor along the frog's own up axis (1 = normal). Width and depth
         /// change the other way, so the volume stays about the same.</param>
         /// <param name="pitchDegrees">Nose-up tilt (negative = nose-down) around the axis across the hop.</param>
-        private void ApplyFrogPose(GrassPatch patch, float along, float yawDegrees, float squashY = 1f, float pitchDegrees = 0f)
+        private void ApplyFrogPose(GrassPatch patch, float along, float yawDegrees, float squashY = 1f, float pitchDegrees = 0f,
+            float arcHeight = -1f)
         {
             Vector3 up = patch.Up;
             Vector3 ground = Vector3.Lerp(patch.HomePoint, patch.LandingPoint, along);
-            float arc = hopHeight * 4f * along * (1f - along);
+            float arc = (arcHeight >= 0f ? arcHeight : hopHeight) * 4f * along * (1f - along);
 
             float widthFactor = 1f / Mathf.Sqrt(squashY);
             Vector3 scale = new Vector3(_taskScale.x * widthFactor, _taskScale.y * squashY, _taskScale.z * widthFactor);
@@ -903,6 +947,12 @@ namespace VirtualShowcase.Showcase
         /// </summary>
         private IEnumerator HopSequence(GrassPatch patch, float from, float to, float yawDegrees, float crouchTime, bool settle)
         {
+            if (_animated)
+            {
+                yield return AnimatedHop(patch, from, to, yawDegrees, settle);
+                yield break;
+            }
+
             // 1. Crouch.
             var elapsed = 0f;
             while (elapsed < crouchTime)
@@ -952,6 +1002,57 @@ namespace VirtualShowcase.Showcase
             }
 
             ApplyFrogPose(patch, to, yawDegrees);
+        }
+
+        /// <summary>
+        ///     The hop with the frog's own animation: the Hop clip plays (crouch, push-off, leap, landing, recover)
+        ///     while the code moves the frog's root over the ground between the take-off and the touch-down moment
+        ///     of the clip. The body lift comes from the animation, so the code arc is almost flat.
+        /// </summary>
+        private IEnumerator AnimatedHop(GrassPatch patch, float from, float to, float yawDegrees, bool settle)
+        {
+            float speed = Mathf.Max(0.1f, animationSpeed);
+            _animator.speed = speed;
+            _animator.Play("Hop", 0, 0f);
+
+            // 1. Rest, crouch and push-off: the frog stays where it is.
+            float wait = clipTakeoffSeconds / speed;
+            var elapsed = 0f;
+            while (elapsed < wait)
+            {
+                ApplyFrogPose(patch, from, yawDegrees);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            // 2. In the air: travel from the start to the landing spot.
+            float flight = Mathf.Max(0.05f, (clipLandingSeconds - clipTakeoffSeconds) / speed);
+            elapsed = 0f;
+            while (elapsed < flight)
+            {
+                float s = elapsed / flight;
+                ApplyFrogPose(patch, Mathf.Lerp(from, to, s), yawDegrees, 1f, 0f, animatedArcHeight);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            ApplyFrogPose(patch, to, yawDegrees);
+
+            // 3. Touch-down: sound, then the clip's landing and recovery until the sitting pose is back.
+            if (settle)
+            {
+                PlayLandingSound();
+                float recover = Mathf.Max(0f, (clipLengthSeconds - clipLandingSeconds) / speed);
+                elapsed = 0f;
+                while (elapsed < recover)
+                {
+                    elapsed += Time.deltaTime;
+                    yield return null;
+                }
+            }
+
+            _animator.speed = 1f;
+            _animator.Play("Idle", 0, 0f);
         }
 
         private void PlayLandingSound()
