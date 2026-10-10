@@ -176,12 +176,14 @@ namespace VirtualShowcase.Showcase
         [SerializeField]
         private float crouchPitchDegrees = 8f;
 
-        [Header("Sounds (generated at run time, no files needed)")]
-        [Tooltip("A light, wet 'pecha' when the frog lands on the ground.")]
+        [Header("Sounds")]
+        [Tooltip("A light, wet step when the frog lands on the ground. The clips are taken from Resources/FrogSounds/Land " +
+                 "(drop more WAV files there: one of them is picked at random each time). " +
+                 "Without any file, a generated 'pecha' is used.")]
         [SerializeField]
         private bool playLandingSound = true;
 
-        [Tooltip("Leave empty to use the generated 'pecha'.")]
+        [Tooltip("One clip that is always used instead of the Resources folder.")]
         [SerializeField]
         private AudioClip landingClip;
 
@@ -191,11 +193,12 @@ namespace VirtualShowcase.Showcase
         [SerializeField]
         private float pechaVolume = 0.1f;
 
-        [Tooltip("A short rustle of grass when the frog leaves the grass and when it dives back in.")]
+        [Tooltip("A short rustle of grass when the frog leaves the grass and when it dives back in. The clips are taken " +
+                 "from Resources/FrogSounds/Rustle (one at random each time). Without any file, a generated rustle is used.")]
         [SerializeField]
         private bool playRustleSound = true;
 
-        [Tooltip("Leave empty to use the generated rustle.")]
+        [Tooltip("One clip that is always used instead of the Resources folder.")]
         [SerializeField]
         private AudioClip rustleClip;
 
@@ -280,6 +283,10 @@ namespace VirtualShowcase.Showcase
         private int _reactionCount;
         private AudioClip _pecha;
         private AudioClip _rustle;
+        private AudioClip[] _landResources;
+        private AudioClip[] _rustleResources;
+        private int _lastLand = -1;
+        private int _lastRustle = -1;
         private Animator _animator;
         private bool _animated;
         private bool _hasTurnHop;
@@ -1128,12 +1135,7 @@ namespace VirtualShowcase.Showcase
                 return;
             }
 
-            if (landingClip == null && _pecha == null)
-            {
-                _pecha = FrogSoundSynth.PechaClip();
-            }
-
-            PlayFrogSound(landingClip != null ? landingClip : _pecha, pechaVolume * volumeScale);
+            PlayFrogSound(PickLandingClip(), pechaVolume * volumeScale);
         }
 
         private void PlayRustleSound(float volumeScale = 1f)
@@ -1143,12 +1145,64 @@ namespace VirtualShowcase.Showcase
                 return;
             }
 
-            if (rustleClip == null && _rustle == null)
+            PlayFrogSound(PickRustleClip(), rustleVolume * volumeScale);
+        }
+
+        private AudioClip PickLandingClip()
+        {
+            if (landingClip != null)
             {
-                _rustle = FrogSoundSynth.RustleClip();
+                return landingClip;
             }
 
-            PlayFrogSound(rustleClip != null ? rustleClip : _rustle, rustleVolume * volumeScale);
+            if (_landResources == null)
+            {
+                _landResources = Resources.LoadAll<AudioClip>("FrogSounds/Land");
+                Debug.Log($"[PokeTask] Landing sounds: {_landResources.Length} clip(s) from Resources/FrogSounds/Land" +
+                          (_landResources.Length == 0 ? " (generated sound is used)" : string.Empty));
+            }
+
+            if (_landResources.Length > 0)
+            {
+                return PickDifferent(_landResources, ref _lastLand);
+            }
+
+            return _pecha != null ? _pecha : (_pecha = FrogSoundSynth.PechaClip());
+        }
+
+        private AudioClip PickRustleClip()
+        {
+            if (rustleClip != null)
+            {
+                return rustleClip;
+            }
+
+            if (_rustleResources == null)
+            {
+                _rustleResources = Resources.LoadAll<AudioClip>("FrogSounds/Rustle");
+                Debug.Log($"[PokeTask] Rustle sounds: {_rustleResources.Length} clip(s) from Resources/FrogSounds/Rustle" +
+                          (_rustleResources.Length == 0 ? " (generated sound is used)" : string.Empty));
+            }
+
+            if (_rustleResources.Length > 0)
+            {
+                return PickDifferent(_rustleResources, ref _lastRustle);
+            }
+
+            return _rustle != null ? _rustle : (_rustle = FrogSoundSynth.RustleClip());
+        }
+
+        /// <summary>A random clip that is not the one played last time (when there is more than one).</summary>
+        private static AudioClip PickDifferent(AudioClip[] clips, ref int last)
+        {
+            int index = Random.Range(0, clips.Length);
+            if (clips.Length > 1 && index == last)
+            {
+                index = (index + 1 + Random.Range(0, clips.Length - 1)) % clips.Length;
+            }
+
+            last = index;
+            return clips[index];
         }
 
         private void PlayFrogSound(AudioClip clip, float volume)
