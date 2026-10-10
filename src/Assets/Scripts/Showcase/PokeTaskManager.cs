@@ -176,17 +176,33 @@ namespace VirtualShowcase.Showcase
         [SerializeField]
         private float crouchPitchDegrees = 8f;
 
-        [Header("Landing sound")]
+        [Header("Sounds (generated at run time, no files needed)")]
+        [Tooltip("A light, wet 'pecha' when the frog lands on the ground.")]
         [SerializeField]
         private bool playLandingSound = true;
 
-        [Tooltip("Leave empty to use a small generated thump.")]
+        [Tooltip("Leave empty to use the generated 'pecha'.")]
         [SerializeField]
         private AudioClip landingClip;
 
-        [Range(0f, 1f)]
+        [Tooltip("Volume of the 'pecha'. Brighter sounds seem louder than the earlier low thump at the same level, " +
+                 "so this is low (0.1 sounds about 30 % quieter than the old thump did at 0.5).")]
+        [Range(0f, 0.5f)]
         [SerializeField]
-        private float landingVolume = 0.5f;
+        private float pechaVolume = 0.1f;
+
+        [Tooltip("A short rustle of grass when the frog leaves the grass and when it dives back in.")]
+        [SerializeField]
+        private bool playRustleSound = true;
+
+        [Tooltip("Leave empty to use the generated rustle.")]
+        [SerializeField]
+        private AudioClip rustleClip;
+
+        [Tooltip("Volume of the grass rustle (kept below the 'pecha': it should only be a hint).")]
+        [Range(0f, 0.5f)]
+        [SerializeField]
+        private float rustleVolume = 0.03f;
 
         [Header("Hop animation (rigged frog)")]
         [Tooltip("Play the frog's own jump animation (an Animator with the states Idle and Hop). " +
@@ -262,7 +278,8 @@ namespace VirtualShowcase.Showcase
 
         private float _reactionSum;
         private int _reactionCount;
-        private AudioClip _generatedThump;
+        private AudioClip _pecha;
+        private AudioClip _rustle;
         private Animator _animator;
         private bool _animated;
         private bool _hasTurnHop;
@@ -1006,6 +1023,7 @@ namespace VirtualShowcase.Showcase
             }
 
             // 2. Flight: stretched at take-off, back to normal in the air; the nose rises, then dips.
+            PlayRustleSound(); // the frog pushes out of the grass (or away from the spot)
             const float launchPortion = 0.15f;
             elapsed = 0f;
             while (elapsed < hopSeconds)
@@ -1025,6 +1043,7 @@ namespace VirtualShowcase.Showcase
             if (!settle)
             {
                 ApplyFrogPose(patch, to, yawDegrees);
+                PlayRustleSound(0.8f); // diving back into the grass
                 yield break;
             }
 
@@ -1068,6 +1087,7 @@ namespace VirtualShowcase.Showcase
             }
 
             // 2. In the air: travel from the start to the landing spot.
+            PlayRustleSound(); // the frog pushes out of the grass (or away from the spot)
             float flight = Mathf.Max(0.05f, (clipLandingSeconds - clipTakeoffSeconds) / speed);
             elapsed = 0f;
             while (elapsed < flight)
@@ -1092,6 +1112,10 @@ namespace VirtualShowcase.Showcase
                     yield return null;
                 }
             }
+            else
+            {
+                PlayRustleSound(0.8f); // diving back into the grass
+            }
 
             _animator.speed = 1f;
             _animator.Play("Idle", 0, 0f);
@@ -1104,44 +1128,41 @@ namespace VirtualShowcase.Showcase
                 return;
             }
 
-            // The frog's own audio source is spatialized and moves with the frog.
-            AudioSource source = vocalizer != null && vocalizer.audioSource != null
-                ? vocalizer.audioSource
-                : frogTouch.audioSource;
-            if (source == null)
+            if (landingClip == null && _pecha == null)
+            {
+                _pecha = FrogSoundSynth.PechaClip();
+            }
+
+            PlayFrogSound(landingClip != null ? landingClip : _pecha, pechaVolume * volumeScale);
+        }
+
+        private void PlayRustleSound(float volumeScale = 1f)
+        {
+            if (!playRustleSound)
             {
                 return;
             }
 
-            AudioClip clip = landingClip != null ? landingClip : GetThumpClip();
-            source.PlayOneShot(clip, landingVolume * volumeScale);
+            if (rustleClip == null && _rustle == null)
+            {
+                _rustle = FrogSoundSynth.RustleClip();
+            }
+
+            PlayFrogSound(rustleClip != null ? rustleClip : _rustle, rustleVolume * volumeScale);
         }
 
-        /// <summary>A soft low "thump": a short decaying tone that drops in pitch, plus a tiny burst of noise.</summary>
-        private AudioClip GetThumpClip()
+        private void PlayFrogSound(AudioClip clip, float volume)
         {
-            if (_generatedThump != null)
+            // The frog's own audio source is spatialized and moves with the frog.
+            AudioSource source = vocalizer != null && vocalizer.audioSource != null
+                ? vocalizer.audioSource
+                : frogTouch.audioSource;
+            if (source == null || clip == null)
             {
-                return _generatedThump;
+                return;
             }
 
-            const int sampleRate = 44100;
-            const float duration = 0.18f;
-            int count = Mathf.RoundToInt(sampleRate * duration);
-            var data = new float[count];
-            var rng = new System.Random(3);
-
-            for (var i = 0; i < count; i++)
-            {
-                float t = (float)i / sampleRate;
-                float tone = Mathf.Sin(2f * Mathf.PI * 85f * t * (1f + 0.6f * Mathf.Exp(-t * 20f))) * Mathf.Exp(-t * 28f);
-                float noise = ((float)rng.NextDouble() * 2f - 1f) * Mathf.Exp(-t * 60f);
-                data[i] = tone * 0.8f + noise * 0.15f;
-            }
-
-            _generatedThump = AudioClip.Create("FrogLandingThump", count, 1, sampleRate, false);
-            _generatedThump.SetData(data, 0);
-            return _generatedThump;
+            source.PlayOneShot(clip, volume);
         }
 
         /// <summary>
